@@ -1,19 +1,66 @@
-[gd_scene load_steps=3 format=3 uid="uid://b7oxckwuiiyo2"]
+[gd_scene load_steps=6 format=3 uid="uid://b7oxckwuiiyo2"]
 
 [ext_resource type="Script" uid="uid://bbm103tkqbe53" path="res://Scripts/testing.gd" id="1_lq4et"]
+[ext_resource type="Texture2D" uid="uid://bckj8j6lsqccg" path="res://Assets/[FREE] Industrial Tileset/FREE/5. Industrial Tileset - Starter Pack 32p/1_Industrial_Tileset_1B.png" id="2_siu27"]
 
-[sub_resource type="CircleShape2D" id="CircleShape2D_5tci5"]
-radius = 33.06055
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_sx6hp"]
+size = Vector2(1144, 84)
+
+[sub_resource type="CapsuleShape2D" id="CapsuleShape2D_4ppfb"]
+radius = 23.0
+height = 86.0
+
+[sub_resource type="SpriteFrames" id="SpriteFrames_8si1v"]
 
 [node name="Testing" type="Node2D"]
 script = ExtResource("1_lq4et")
 
-[node name="StaticBody2D" type="StaticBody2D" parent="."]
-position = Vector2(50, 62)
+[node name="Floor" type="StaticBody2D" parent="."]
+position = Vector2(1, 1)
 scale = Vector2(2.625, 2.625)
 constant_linear_velocity = Vector2(-0.055, 0)
 
-[node name="CollisionShape2D" type="CollisionShape2D" parent="StaticBody2D"]
-position = Vector2(0.38095284, -23.238094)
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Floor"]
+position = Vector2(220.57146, 228.57146)
 scale = Vector2(0.3809524, 0.3809524)
-shape = SubResource("CircleShape2D_5tci5")
+shape = SubResource("RectangleShape2D_sx6hp")
+
+[node name="Sprite2D" type="Sprite2D" parent="Floor"]
+position = Vector2(18.666668, 228.57144)
+texture = ExtResource("2_siu27")
+region_enabled = true
+region_rect = Rect2(0, 0, 32, 32)
+
+[node name="Sprite2D2" type="Sprite2D" parent="Floor"]
+position = Vector2(50.667, 228.571)
+texture = ExtResource("2_siu27")
+region_enabled = true
+region_rect = Rect2(32, 0, 32, 32)
+
+[node name="Sprite2D3" type="Sprite2D" parent="Floor"]
+position = Vector2(82.667, 228.571)
+texture = ExtResource("2_siu27")
+region_enabled = true
+region_rect = Rect2(32, 0, 32, 32)
+
+[node name="Sprite2D4" type="Sprite2D" parent="Floor"]
+position = Vector2(114.667, 228.571)
+texture = ExtResource("2_siu27")
+region_enabled = true
+region_rect = Rect2(32, 0, 32, 32)
+
+[node name="Sprite2D5" type="Sprite2D" parent="Floor"]
+position = Vector2(146.667, 228.571)
+scale = Vector2(1.16, 1.16)
+texture = ExtResource("2_siu27")
+region_enabled = true
+region_rect = Rect2(32, 0, 32, 32)
+
+[node name="CharacterBody2D" type="CharacterBody2D" parent="."]
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="CharacterBody2D"]
+position = Vector2(42, 504)
+shape = SubResource("CapsuleShape2D_4ppfb")
+
+[node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="CharacterBody2D"]
+sprite_frames = SubResource("SpriteFrames_8si1v")
