@@ -11,14 +11,14 @@ The game is a 2D Metroidvania with a high emphasis in movement and movement-base
 ## Describe the core gameplay system of your game
 
 - Combat & Movement System
-    - Temporary Ability Item System
+	- Temporary Ability Item System
 - Map Design
-    - Destructible Environments (Set pieces, not physics based)
-    - Weather Effects
+	- Destructible Environments (Set pieces, not physics based)
+	- Weather Effects
 - NPC’s behavior system during free roam
-    - Good: World building
-    - Hostile: Attack on sight
-    - Neutral: Initially good, unless provoked
+	- Good: World building
+	- Hostile: Attack on sight
+	- Neutral: Initially good, unless provoked
 - Expendable Item System
 - Puzzles
 - Cutscenes
@@ -32,22 +32,22 @@ The game is a 2D Metroidvania with a high emphasis in movement and movement-base
 ---
 
 - Interconected Maps/Levels
-    - Metrovania
+	- Metrovania
 - NPC’s → Provide worldbuilding.
-    - Hostile
-    - Good
-    - Indifferent
+	- Hostile
+	- Good
+	- Indifferent
 - Each level has a boss (visual indicator provided)
 - Condition to activate boss → Incentives player to explore the map
-    - Keys/Items dropped by particular NPC’s
+	- Keys/Items dropped by particular NPC’s
 - Exploration
 - Puzzles
 - Hollow Knight + Mega Bonk
-    - Player explores the map
-    - Kills npcs
-    - Levels up
+	- Player explores the map
+	- Kills npcs
+	- Levels up
 - Combat & Movement
-    - Each character has their own set of combat and movement abilities
-    - Focused heavily on movement but not required
+	- Each character has their own set of combat and movement abilities
+	- Focused heavily on movement but not required
 - Map creation and design will be designed around the characters
 - Bosses can have grab checks
