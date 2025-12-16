@@ -1,11 +1,11 @@
 extends CharacterBody2D
-class_name nathangarcia
 
-@export var SPEED := 300.0
-@export var JUMP_VELOCITY := -400.0
+
+const SPEED = 300.0
+const JUMP_VELOCITY = -400.0
 
 @onready var animated_sprite = $AnimatedSprite2D
-@onready var direction : float = 0.0
+
 
 func _physics_process(delta: float) -> void:
 	# Add the gravity.
@@ -18,7 +18,7 @@ func _physics_process(delta: float) -> void:
 
 	# Get the input direction and handle the movement/deceleration.
 	# As good practice, you should replace UI actions with custom gameplay actions.
-	direction = Input.get_axis("left", "right")
+	var direction := Input.get_axis("left", "right")
 	#if direction:
 		#velocity.x = direction * SPEED
 	#else:

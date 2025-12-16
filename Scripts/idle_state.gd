@@ -1,13 +1,10 @@
 extends State
 class_name Idle_State
 
-@onready var player : CharacterBody2D = $"../.."
-@onready var sprite : AnimatedSprite2D = $"../../AnimatedSprite2D"
-@onready var SPEED = player.SPEED
+@export var sprite : AnimatedSprite2D
 
 func Enter():
 	sprite.play("Idle")
-	player.velocity.x = move_toward(player.velocity.x, 0, SPEED)
 	pass
 	
 	
@@ -18,6 +15,6 @@ func Update(_delta:float):
 	if Input.is_action_just_pressed("down"):
 		#Transition to Crouching state
 		state_transition.emit(self, "Crouching")
-	if !(player.is_on_floor()):
+	if Input.is_action_just_pressed("up"):
 		#Transition to InAir state
-		state_transition.emit(self, "InAir")
+		state_transition.emit(self, "InAir_State")
