@@ -3,8 +3,8 @@ class_name Running_State
 
 @onready var player : CharacterBody2D = $"../.."
 @onready var animated_sprite : AnimatedSprite2D = $"../../AnimatedSprite2D"
-
 @onready var SPEED = player.SPEED
+
 # Called when the node enters the scene tree for the first time.
 func Enter():
 	pass
@@ -18,17 +18,17 @@ func Update(_delta:float):
 		player.velocity.x = direction * SPEED
 		animated_sprite.play("Running")
 		animated_sprite.flip_h = player.direction < 0
-	else:
-		player.velocity.x = player.move_toward(player.velocity.x, 0, SPEED)
 		
 		
-	
+# Conditions for switching states
 	if(!(Input.get_axis("left","right"))):
-		#Transition to Running state
-		state_transition.emit(self, "Idle_State")
-	if Input.is_action_just_pressed("down") && player.is_on_floor():
+		#Transition to Idle state
+		print("transitioning to idle state")
+		state_transition.emit(self, "Idle")
+	if Input.is_action_just_pressed("down"):
 		#Transition to Crouching state
-		state_transition.emit(self, "Crouching_State")
+		player.velocity.x = move_toward(player.velocity.x, 0, SPEED)
+		state_transition.emit(self, "Crouching")
 	if !(player.is_on_floor()):
 		#Transition to InAir state
-		state_transition.emit(self, "InAir_State")
+		state_transition.emit(self, "InAir")
