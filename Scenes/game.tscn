@@ -1,7 +1,8 @@
-[gd_scene load_steps=5 format=4 uid="uid://elst0xn32iil"]
+[gd_scene load_steps=6 format=4 uid="uid://elst0xn32iil"]
 
 [ext_resource type="Texture2D" uid="uid://u5h7oub651g" path="res://Assets/[FREE] Industrial Tileset/FREE/5. Industrial Tileset - Starter Pack 32p/1_Industrial_Tileset_1.png" id="1_ebmjs"]
 [ext_resource type="PackedScene" uid="uid://dbjpxy0kv7hj3" path="res://Scenes/Rob.tscn" id="2_qxrlw"]
+[ext_resource type="PackedScene" uid="uid://bhjpq62u38i5m" path="res://Scenes/nathangarcia.tscn" id="3_wrm1d"]
 
 [sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_qxrlw"]
 texture = ExtResource("1_ebmjs")
@@ -210,9 +211,12 @@ tile_map_data = PackedByteArray("AAAAACgAAAAIAAEAAAABACgAAAALAAAAAAACACgAAAAJAAA
 tile_set = SubResource("TileSet_wrm1d")
 
 [node name="Rob" parent="." instance=ExtResource("2_qxrlw")]
+visible = false
 position = Vector2(495, 596)
 scale = Vector2(2, 2)
 
 [node name="Camera2D" type="Camera2D" parent="."]
 position = Vector2(576, 338)
 scale = Vector2(0.5, 0.5)
+
+[node name="Player" parent="." instance=ExtResource("3_wrm1d")]
