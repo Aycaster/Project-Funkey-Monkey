@@ -30,3 +30,4 @@ func Update(_delta:float):
 
 func Attack():
 	sprite.play("Idle Punch")
+	print("Fuck you punch")
