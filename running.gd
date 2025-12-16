@@ -23,7 +23,6 @@ func Update(_delta:float):
 	# Conditions for switching states
 	if(!(Input.get_axis("left","right"))):
 		#Transition to Idle state
-		print("transitioning to idle state")
 		state_transition.emit(self, "Idle")
 	if Input.is_action_just_pressed("down"):
 		#Transition to Crouching state

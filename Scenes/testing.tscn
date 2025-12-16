@@ -1,6 +1,6 @@
 [gd_scene load_steps=5 format=3 uid="uid://b7oxckwuiiyo2"]
 
-[ext_resource type="Script" uid="uid://bbm103tkqbe53" path="res://Scripts/testing.gd" id="1_lq4et"]
+[ext_resource type="Script" uid="uid://bbm103tkqbe53" path="res://Scripts/nathangarcia/testing.gd" id="1_lq4et"]
 [ext_resource type="Texture2D" uid="uid://bckj8j6lsqccg" path="res://Assets/[FREE] Industrial Tileset/FREE/5. Industrial Tileset - Starter Pack 32p/1_Industrial_Tileset_1B.png" id="2_siu27"]
 [ext_resource type="PackedScene" uid="uid://bhjpq62u38i5m" path="res://Scenes/nathangarcia.tscn" id="3_sx6hp"]
 

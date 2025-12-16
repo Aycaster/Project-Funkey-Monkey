@@ -12,6 +12,12 @@ func Enter():
 	
 	
 func Update(_delta:float):
+	
+	if Input.is_action_just_pressed("secondary key"):
+		Attack()
+	if !sprite.is_playing():
+		sprite.play("Idle")
+	# State Transitions Conditions
 	if(Input.get_axis("left","right")):
 		#Transition to Running state
 		state_transition.emit(self, "Running")
@@ -21,3 +27,6 @@ func Update(_delta:float):
 	if !(player.is_on_floor()):
 		#Transition to InAir state
 		state_transition.emit(self, "InAir")
+
+func Attack():
+	sprite.play("Idle Punch")

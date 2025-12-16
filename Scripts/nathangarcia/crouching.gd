@@ -14,17 +14,12 @@ func Exit():
 	pass
 	
 func Update(_delta:float):
-	animated_sprite.play("Crouching")
 	var direction = player.direction
-	if direction:
-		player.velocity.x = direction * (SPEED / 2)
-		animated_sprite.play("Crouch Crawl")
-		animated_sprite.flip_h = player.direction < 0
-	else:
-		player.velocity.x = move_toward(player.velocity.x, 0, SPEED)
 	
+	if direction:
+		state_transition.emit(self, "CrouchWalk")
 	
 	if(!(Input.is_action_pressed("down"))):
 		#Transition to Idle state
-		player.SPEED = 300.0
+		player.velocity.x = direction * SPEED
 		state_transition.emit(self, "Idle")
