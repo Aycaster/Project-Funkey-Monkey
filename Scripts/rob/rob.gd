@@ -30,14 +30,15 @@ func _physics_process(delta: float) -> void:
 	get_dir()
 	var x = get_dir().x
 	var y = get_dir().y
-	current_state = state.idle
 	
 	# Add the gravity.
 	if not is_on_floor():
 		velocity += get_gravity() * delta
+		if velocity.y < 0:
+			animated_sprite.play("jump")
 	
 	# Handles the movement events.
-	if x > 0 and Input.is_action_pressed("secondary key"):
+	"""if x > 0 and Input.is_action_pressed("secondary key"):
 		current_state = state.run_right
 	elif x > 0:
 		current_state = state.walk_right
@@ -48,35 +49,35 @@ func _physics_process(delta: float) -> void:
 	if y < 0 and is_on_floor():
 		current_state = state.jump
 	if y > 0: 
-		current_state = state.crouch
-		
+		current_state = state.crouch"""
 	
 	# Handles the actual effects of given state.
+	# main state being run
 	if current_state == state.idle:
 		animated_sprite.play("idle")
 		velocity.x = 0
+		# pathways to other states
+		if x > 0:
+			current_state = state.walk_right
+		if x < 0 :
+			current_state = state.walk_left
+	
 	if current_state == state.walk_right:
 		animated_sprite.play("walk")
 		animated_sprite.flip_h = false
 		velocity.x = SPEED
-	if current_state == state.run_right:
-		animated_sprite.play("run")
-		animated_sprite.flip_h = false
-		velocity.x = 2 * SPEED
+		if x == 0:
+			current_state = state.idle
+		if x < 0 :
+			current_state = state.walk_left
+	
 	if current_state == state.walk_left:
 		animated_sprite.play("walk")
 		animated_sprite.flip_h = true
 		velocity.x = -SPEED
-	if current_state == state.run_left:
-		animated_sprite.play("run")
-		animated_sprite.flip_h = true
-		velocity.x = 2 * -SPEED
-	if current_state == state.jump:
-		animated_sprite.play("jump")
-		velocity.y = JUMP_VELOCITY
-	if current_state == state.crouch:
-		pass
-	
-	
+		if x == 0:
+			current_state = state.idle
+		if x > 0 :
+			current_state = state.walk_right
 
 	move_and_slide()
