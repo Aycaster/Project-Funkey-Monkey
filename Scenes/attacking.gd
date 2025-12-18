@@ -6,21 +6,18 @@ class_name Attacking_State
 @onready var SPEED = player.SPEED
 
 func Enter():
-	sprite.play("Ice Blast")
+	if Input.is_physical_key_pressed(KEY_E):
+		sprite.play("Meg")
+	if Input.is_physical_key_pressed(KEY_Q):
+		sprite.play("Fire Blast")
+	if Input.is_physical_key_pressed(KEY_F):
+		sprite.play("Ice Blast")
 	pass
 
 func Exit():
 	pass
 
 func Update(_delta:float):
-	var direction
-	
 	if !sprite.is_playing():
+		# Transition to Idle State
 		state_transition.emit(self, "Idle")
-
-	direction = Input.get_axis("left", "right")
-	if direction:
-		player.velocity.x = direction * SPEED
-	else:
-		player.velocity.x = move_toward(player.velocity.x, 0, SPEED)
-		player.animated_sprite.play("Idle")

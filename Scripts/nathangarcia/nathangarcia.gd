@@ -20,11 +20,12 @@ func _physics_process(delta: float) -> void:
 	# Get the input direction and handle the movement/deceleration.
 	# As good practice, you should replace UI actions with custom gameplay actions.
 	direction = Input.get_axis("left", "right")
-	#if direction:
-		#velocity.x = direction * SPEED
-	#else:
-		#velocity.x = move_toward(velocity.x, 0, SPEED)
-		#animated_sprite.play("Idle")
+	if direction:
+		if Input.is_action_pressed("down"): # Speed when crouch
+			velocity.x = direction * (SPEED / 2)
+		else:
+			velocity.x = direction * SPEED
+	else:
+		velocity.x = move_toward(velocity.x, 0, SPEED)
 
 	move_and_slide()
-	

@@ -15,7 +15,7 @@ func Exit():
 func Update(_delta:float):
 	var direction = player.direction
 	if direction:
-		player.velocity.x = direction * SPEED
+		#player.velocity.x = direction * SPEED
 		animated_sprite.play("Running")
 		animated_sprite.flip_h = player.direction < 0
 		
@@ -26,8 +26,10 @@ func Update(_delta:float):
 		state_transition.emit(self, "Idle")
 	if Input.is_action_just_pressed("down"):
 		#Transition to Crouching state
-		player.velocity.x = move_toward(player.velocity.x, 0, SPEED)
+		#player.velocity.x = move_toward(player.velocity.x, 0, SPEED)
 		state_transition.emit(self, "Crouching")
 	if !(player.is_on_floor()):
 		#Transition to InAir state
 		state_transition.emit(self, "InAir")
+	if Input.is_physical_key_pressed(KEY_E) || Input.is_physical_key_pressed(KEY_Q) || Input.is_physical_key_pressed(KEY_F):
+		state_transition.emit(self, "Attacking")

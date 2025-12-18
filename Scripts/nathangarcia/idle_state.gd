@@ -7,16 +7,14 @@ class_name Idle_State
 
 func Enter():
 	sprite.play("Idle")
-	player.velocity.x = move_toward(player.velocity.x, 0, SPEED)
 	pass
 	
-	
+
 func Update(_delta:float):
-	
-	
 	if !sprite.is_playing():
 		sprite.play("Idle")
-	# State Transitions Conditions
+
+# State Transitions Conditions
 	if(Input.get_axis("left","right")):
 		#Transition to Running state
 		state_transition.emit(self, "Running")
@@ -26,3 +24,5 @@ func Update(_delta:float):
 	if !(player.is_on_floor()):
 		#Transition to InAir state
 		state_transition.emit(self, "InAir")
+	if Input.is_physical_key_pressed(KEY_E) || Input.is_physical_key_pressed(KEY_Q) || Input.is_physical_key_pressed(KEY_F):
+		state_transition.emit(self, "Attacking")

@@ -21,5 +21,6 @@ func Update(_delta:float):
 	
 	if(!(Input.is_action_pressed("down"))):
 		#Transition to Idle state
-		player.velocity.x = direction * SPEED
 		state_transition.emit(self, "Idle")
+	if Input.is_physical_key_pressed(KEY_E) || Input.is_physical_key_pressed(KEY_Q) || Input.is_physical_key_pressed(KEY_F):
+		state_transition.emit(self, "Attacking")
