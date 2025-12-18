@@ -1,12 +1,8 @@
 extends CharacterBody2D
+class_name Rob
 
-
-const SPEED = 100.0
-const JUMP_VELOCITY = -300.0
-enum state {idle, walk_left, walk_right, run_left, run_right, jump, land, crouch}
-var current_state: state = state.idle
-
-@onready var animated_sprite = $AnimatedSprite2D
+const speed = 100.0
+const jump_velocity = -300.0
 
 func get_dir() -> Vector2:
 		
@@ -23,61 +19,3 @@ func get_dir() -> Vector2:
 			y += 1
 		
 		return Vector2(x, y).normalized()
-
-func _physics_process(delta: float) -> void:
-	
-	# Variables to use below
-	get_dir()
-	var x = get_dir().x
-	var y = get_dir().y
-	
-	# Add the gravity.
-	if not is_on_floor():
-		velocity += get_gravity() * delta
-		if velocity.y < 0:
-			animated_sprite.play("jump")
-	
-	# Handles the movement events.
-	"""if x > 0 and Input.is_action_pressed("secondary key"):
-		current_state = state.run_right
-	elif x > 0:
-		current_state = state.walk_right
-	if x < 0 and Input.is_action_pressed("secondary key"):
-		current_state = state.run_left
-	elif x < 0 :
-		current_state = state.walk_left
-	if y < 0 and is_on_floor():
-		current_state = state.jump
-	if y > 0: 
-		current_state = state.crouch"""
-	
-	# Handles the actual effects of given state.
-	# main state being run
-	if current_state == state.idle:
-		animated_sprite.play("idle")
-		velocity.x = 0
-		# pathways to other states
-		if x > 0:
-			current_state = state.walk_right
-		if x < 0 :
-			current_state = state.walk_left
-	
-	if current_state == state.walk_right:
-		animated_sprite.play("walk")
-		animated_sprite.flip_h = false
-		velocity.x = SPEED
-		if x == 0:
-			current_state = state.idle
-		if x < 0 :
-			current_state = state.walk_left
-	
-	if current_state == state.walk_left:
-		animated_sprite.play("walk")
-		animated_sprite.flip_h = true
-		velocity.x = -SPEED
-		if x == 0:
-			current_state = state.idle
-		if x > 0 :
-			current_state = state.walk_right
-
-	move_and_slide()

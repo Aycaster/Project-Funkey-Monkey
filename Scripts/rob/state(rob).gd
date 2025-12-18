@@ -1,27 +1,26 @@
 extends Node
+class_name RobState
 
+# Used to ask whether or not the state can transition
+signal request_transition
 
-# Sends a signal whenever the state finishes and wants to transition
-signal finished(next_state: String, data: Dictionary)
-
-# Called by the state machine when recieving unhandled input events.
-func handled_inputs(_events: InputEvent) -> void:
+# Called when the state is set to activate
+func enter(selected_state: RobState) -> void:
 	pass
 
-# Called by the state machine on the main engine loop tick.
-func update(_delta: float) -> void:
-	pass
-
-# Called by the state machine on the engine's physics update tick.
-func physics_update(_delta: float) -> void:
-	pass
-
-# Called by the state machine upon changing the active state. The `data` parameter
-# is a dictionary with arbitrary data the state can use to initialize itself.
-func enter(previous_state: String, data := {}) -> void:
-	pass
-
-# Called by the state machine before changing the active state. Use this function
-# to clean up the state.
+# Called when another state is to activate in order to clean up the previous one
 func exit() -> void:
+	pass
+
+# Used when in the engines main loop tick
+func update(delta: float) -> void:
+	pass
+
+# Used for the main engine physics update tick
+func physics_update(delta: float) -> void:
+	pass
+
+# Checks to see if the ability is allowed to be used in the current state
+# defualt policy is true for the time being
+func can_use_action(action_id: String, current_state: RobState) -> void:
 	pass
