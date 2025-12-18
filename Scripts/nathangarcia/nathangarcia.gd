@@ -6,7 +6,6 @@ class_name nathangarcia
 @export var JUMP_VELOCITY := -400.0
 
 @onready var animated_sprite = $AnimatedSprite2D
-
 @onready var direction : float = 0.0
 
 func _physics_process(delta: float) -> void:
@@ -26,5 +25,6 @@ func _physics_process(delta: float) -> void:
 	#else:
 		#velocity.x = move_toward(velocity.x, 0, SPEED)
 		#animated_sprite.play("Idle")
-	
+
 	move_and_slide()
+	

@@ -18,6 +18,8 @@ func Update(_delta:float):
 	if direction:
 		player.velocity.x = direction * SPEED
 		animated_sprite.flip_h = player.direction < 0
+	else:
+		player.velocity.x = move_toward(player.velocity.x, 0, SPEED)
 	
 	if player.is_on_floor():
 		#Transition to Running state
