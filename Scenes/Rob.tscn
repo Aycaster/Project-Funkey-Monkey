@@ -1,4 +1,4 @@
-[gd_scene load_steps=50 format=3 uid="uid://dbjpxy0kv7hj3"]
+[gd_scene load_steps=52 format=3 uid="uid://dbjpxy0kv7hj3"]
 
 [ext_resource type="Script" uid="uid://bvg03sh0aiphy" path="res://Scripts/rob/rob.gd" id="1_itf38"]
 [ext_resource type="Texture2D" uid="uid://dtmkt63bnv0r5" path="res://Assets/Animations/Upward Jump.png" id="2_y3vv4"]
@@ -7,6 +7,8 @@
 [ext_resource type="Texture2D" uid="uid://dlua182q7cik5" path="res://Assets/Animations/Stop_Running.png" id="5_ce07w"]
 [ext_resource type="Texture2D" uid="uid://bnc5ifx0d435p" path="res://Assets/Animations/Walking.png" id="6_xnorx"]
 [ext_resource type="Script" uid="uid://chwelefmv2uhs" path="res://Scripts/rob/state_machine(rob).gd" id="7_cgtu4"]
+[ext_resource type="Script" uid="uid://ch8to2mdudm7r" path="res://Scripts/rob/ground_state.gd" id="8_q2g7r"]
+[ext_resource type="Script" uid="uid://dt4aorkp1ixy3" path="res://Scripts/rob/air_state.gd" id="9_ce07w"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_itf38"]
 size = Vector2(12, 21)
@@ -334,3 +336,9 @@ animation = &"idle"
 
 [node name="State Machine" type="Node" parent="."]
 script = ExtResource("7_cgtu4")
+
+[node name="Ground State" type="Node" parent="State Machine"]
+script = ExtResource("8_q2g7r")
+
+[node name="Air State" type="Node" parent="State Machine"]
+script = ExtResource("9_ce07w")

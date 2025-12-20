@@ -1,32 +1,40 @@
 extends Node
 class_name state_machine
 
-var character : Rob
-var starting_state : RobState = null
-var current_state : RobState = (func get_starting_state() -> RobState:
+# State the character ctarts out with
+@export var starting_state : RobState = null
+# tracks current state and uses first child node if nothing is starting state
+@onready var current_state : RobState = (func get_starting_state() -> RobState:
 	return get_child(0) if starting_state == null else starting_state).call()
+# Kepps all of the states in here
 var states := {}
 
-func _ready() -> void:
+# Adds all of the states to the dictionary to store them for later use
+func init(parent: Rob, animation: AnimatedSprite2D) -> void:
 	for child in get_children():
 		if child is RobState:
 			states[child.name.to_lower()] = child
-			child.character = character
+			child.animation = animation
+			child.parent = parent
 			child.request_transition.connect(transition_states)
+			print("these are the current list of states " + str(states))
 
+# Transitions the states from the old to new one.
 func transition_states(incoming_state: RobState):
 	if incoming_state == current_state:
 		return
 	
 	var previous_state := current_state
+	print("as of this moment, this is the current state: " + str(current_state))
 	current_state.exit()
 	current_state = incoming_state
+	print("as of the next moment, this is the current state: " + str(current_state))
 	current_state.enter(previous_state)
 
+# Updates the states logic in the main game loop.
 func _process(delta):
-	if current_state:
-		current_state.update(delta)
+	current_state.update(delta)
 
+# Same thing as _process but for the physics.
 func _physics_process(delta):
-	if current_state:
-		current_state.physics_process(delta)
+	current_state.physics_update(delta)
