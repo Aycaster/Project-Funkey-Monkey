@@ -1,6 +1,6 @@
 extends CharacterBody2D
 class_name Rob
-@onready var animation = $"AnimatedSprite2D"
+@onready var animation = $AnimatedSprite2D
 @onready var statemachine = $"State Machine"
 
 # Variables to be used in the states and action scripts.

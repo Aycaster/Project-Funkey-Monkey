@@ -4,10 +4,12 @@ class_name AirState
 func enter(_selected_state: RobState) -> void:
 	animation.play("idle")
 
-func update(_delta: float) -> void:
+func exit() -> void:
 	pass
-	"""if parent.is_on_floor():
-		request_transition.emit(statemachine.states["ground states"])"""
+
+func update(_delta: float) -> void:
+	if parent.is_on_floor():
+		request_transition.emit(statemachine.states["ground state"])
 
 func physics_update(_delta: float) -> void:
 	parent.velocity.y = parent.jump_velocity

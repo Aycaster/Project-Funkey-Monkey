@@ -9,9 +9,8 @@ func exit() -> void:
 	pass
 
 func update(_delta: float) -> void:
-	print("lololololol")
-	"""if not parent.is_on_floor():
-		request_transition.emit(statemachine.states["air states"])"""
+	if not parent.is_on_floor():
+		request_transition.emit(statemachine.states["air state"])
 
 func physics_update(_delta: float) -> void:
 	parent.velocity.y = 0
