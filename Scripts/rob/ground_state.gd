@@ -13,7 +13,7 @@ func update(_delta: float) -> void:
 		request_transition.emit(statemachine.states["air state"])
 
 func physics_update(_delta: float) -> void:
-	parent.velocity.y = 0
+	parent.velocity.x = 0
 
 func can_use_action(action_list) -> void:
 	for action in action_list:

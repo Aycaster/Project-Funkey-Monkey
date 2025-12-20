@@ -18,7 +18,6 @@ func init(parent: Rob, animation: AnimatedSprite2D) -> void:
 			child.animation = animation
 			child.parent = parent
 			child.request_transition.connect(transition_states)
-			print("these are the current list of states " + str(states))
 
 # Transitions the states from the old to new one.
 func transition_states(incoming_state: RobState):
@@ -26,10 +25,8 @@ func transition_states(incoming_state: RobState):
 		return
 	
 	var previous_state := current_state
-	print("as of this moment, this is the current state: " + str(current_state))
 	current_state.exit()
 	current_state = incoming_state
-	print("as of the next moment, this is the current state: " + str(current_state))
 	current_state.enter(previous_state)
 
 # Updates the states logic in the main game loop.

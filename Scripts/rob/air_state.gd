@@ -12,7 +12,7 @@ func update(_delta: float) -> void:
 		request_transition.emit(statemachine.states["ground state"])
 
 func physics_update(_delta: float) -> void:
-	parent.velocity.y = parent.jump_velocity
+	parent.velocity += parent.get_gravity() * _delta
 
 func can_use_action(action_list) -> void:
 	for action in action_list:
