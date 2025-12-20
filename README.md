@@ -10,7 +10,9 @@ The game is a 2D Metroidvania with a high emphasis in movement and movement-base
 
 ## Describe the core gameplay system of your game
 
-- Combat & Movement System
+- Player System
+  	- Combat & Movement System
+  	- XP/Stats Leveling System
 	- Temporary Ability Item System
 - Map Design
 	- Destructible Environments (Set pieces, not physics based)
