@@ -1,5 +1,5 @@
 extends Node
-class_name state_machine
+class_name State_Machine
 
 # Keeps all of the states in here
 @export var states := {}
@@ -10,13 +10,14 @@ class_name state_machine
 	return get_child(0) if starting_state == null else starting_state).call()
 
 # Adds all of the states to the dictionary to store them for later use
-func init(parent: Rob, animation: AnimatedSprite2D) -> void:
+func init(parent: Rob, movement: Movement_Rob, attack: Attack) -> void:
 	for child in get_children():
 		if child is RobState:
 			states[child.name.to_lower()] = child
-			child.statemachine = self
-			child.animation = animation
+			child.attack = attack
 			child.parent = parent
+			child.movement = movement
+			child.statemachine = self
 			child.request_transition.connect(transition_states)
 
 # Transitions the states from the old to new one.
@@ -29,10 +30,5 @@ func transition_states(incoming_state: RobState):
 	current_state = incoming_state
 	current_state.enter(previous_state)
 
-# Updates the states logic in the main game loop.
-func _process(_delta):
-	current_state.update(_delta)
-
-# Same thing as _process but for the physics.
-func _physics_process(_delta):
-	current_state.physics_update(_delta)
+func _physics_process(delta: float) -> void:
+	current_state.physics_update(delta)

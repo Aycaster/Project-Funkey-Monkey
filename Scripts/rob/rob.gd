@@ -1,44 +1,43 @@
 extends CharacterBody2D
 class_name Rob
+@onready var descriptor = $Descriptor
 @onready var animation = $AnimatedSprite2D
 @onready var statemachine = $"State Machine"
+@onready var attack = $Attack
+@onready var movement = $Movement
 
 # Variables to be used in the states and action scripts.
-const base_speed = 100.0
-const jump_velocity = -300.0
+const gravity := 1000
+const base_speed := 100.0
+const jump_velocity := -300.0
 
 func _ready() -> void:
-	statemachine.init(self, animation)
-
-# Returns the direction of the player.
-func get_dir() -> Vector2:
-
-		var x = 0
-		var y = 0
-
-		if Input.is_physical_key_pressed(KEY_D):
-			x += 1
-		if Input.is_physical_key_pressed(KEY_A):
-			x -= 1
-		if Input.is_physical_key_pressed(KEY_W):
-			y -= 1
-		if Input.is_physical_key_pressed(KEY_S):
-			y += 1
-
-		return Vector2(x, y).normalized()
-
-func _physics_process(_delta: float) -> void:
 	
-	var dir = get_dir()
-	if dir.x > 0:
-		animation.play("walk")
-		animation.flip_h = false
-		velocity.x = dir.x * base_speed
-	if dir.x < 0:
-		animation.play("walk")
-		animation.flip_h = true
-		velocity.x = dir.x * base_speed
-	if statemachine.current_state == statemachine.states["ground state"]:
-		if dir.y < 0:
-			velocity.y = jump_velocity
+	animation.desc = descriptor
+	
+	attack.parent = self
+	attack.move = movement
+	attack.desc = descriptor
+	attack.anim = animation
+	
+	movement.descriptor = descriptor
+	movement.attack = attack
+	movement.parent = self
+	
+	statemachine.init(self, movement, attack)
+
+func _process(delta: float) -> void:
+	
+	Debug_Console.look("player direction", movement.get_dir())
+	Debug_Console.look("player velocity", velocity)
+	Debug_Console.look("current state", statemachine.current_state)
+	Debug_Console.look("current movement", descriptor.current_movement)
+	Debug_Console.look(("current attack"), descriptor.current_attack)
+	Debug_Console.look(("attack buffer"), attack.attack_executed)
+	
+	animation.animator()
+
+func _physics_process(delta: float) -> void:
+	
+	movement.gravity(delta)
 	move_and_slide()

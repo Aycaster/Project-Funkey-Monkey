@@ -1,13 +1,5 @@
-extends Node
-class_name RobState
-
-var parent : Rob
-var attack : Attack
-var movement : Movement_Rob
-var statemachine : State_Machine
-
-# Used to ask whether or not the state can transition
-signal request_transition(next_state: RobState)
+extends RobState
+class_name Can_Control
 
 # Called when the state is set to activate
 func enter(_selected_state: RobState) -> void:
@@ -18,4 +10,8 @@ func exit() -> void:
 	pass
 
 func physics_update(_delta) -> void:
-	pass
+	
+	attack.attack()
+	movement.get_dir()
+	movement.move(_delta)
+ 
