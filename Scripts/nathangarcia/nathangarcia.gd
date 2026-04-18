@@ -1,7 +1,7 @@
 extends CharacterBody2D
 class_name nathangarcia
 
-@export var health : int = 100
+@export var stats : Stats
 @export var SPEED := 300.0
 @export var JUMP_VELOCITY := -400.0
 
@@ -11,7 +11,7 @@ class_name nathangarcia
 @onready var is_alive : bool = true
 
 func _ready():
-	healthbar.init_health(health)
+	healthbar.init_health(stats.health)
 
 func _physics_process(delta: float) -> void:
 	if is_alive:
@@ -38,7 +38,7 @@ func _physics_process(delta: float) -> void:
 
 
 func _update_health(value) -> void:
-	health = value
-	healthbar.health = health
-	if health <= 0 && is_alive:
+	stats.health = value
+	healthbar.health = stats.health
+	if stats.health <= 0 && is_alive:
 		is_alive = false

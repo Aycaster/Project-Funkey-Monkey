@@ -1,0 +1,8 @@
+[gd_resource type="Resource" script_class="Stats" load_steps=2 format=3 uid="uid://c5r3ko5lmopr2"]
+
+[ext_resource type="Script" uid="uid://bxtccrmiu6tg4" path="res://Scripts/nathangarcia/stats.gd" id="1_buhhm"]
+
+[resource]
+script = ExtResource("1_buhhm")
+health = 35
+metadata/_custom_type_script = "uid://bxtccrmiu6tg4"

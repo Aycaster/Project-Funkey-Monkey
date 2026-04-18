@@ -10,7 +10,7 @@ config_version=5
 
 [application]
 
-config/name="New Game Project"
+config/name="Dual Light"
 run/main_scene="uid://elst0xn32iil"
 config/features=PackedStringArray("4.5", "Forward Plus")
 config/icon="res://icon.svg"
