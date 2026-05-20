@@ -3,6 +3,10 @@ class_name RobAnimation
 
 var desc : Descriptor
 
+func init(_desc : Descriptor) -> void:
+	
+	desc = _desc
+
 func animator() -> void:
 	if desc.current_attack == "None":
 		play(desc.current_movement)

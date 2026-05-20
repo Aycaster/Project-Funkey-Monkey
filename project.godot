@@ -8,16 +8,20 @@
 
 config_version=5
 
+[animation]
+
+compatibility/default_parent_skeleton_in_mesh_instance_3d=true
+
 [application]
 
 config/name="New Game Project"
 run/main_scene="uid://elst0xn32iil"
-config/features=PackedStringArray("4.5", "Forward Plus")
+config/features=PackedStringArray("4.6", "Forward Plus")
 config/icon="res://icon.svg"
 
 [autoload]
 
-Debug_Console="*res://Scripts/rob/debug_console.gd"
+Debug_Console="*res://Scripts/rob/misc/debug_console.gd"
 
 [display]
 
@@ -59,3 +63,8 @@ crouch={
 ]
 }
 ">>>>>>>f687c431f9da9d41612cc553b5483a456e2f5f29[rendering]textures/canvas_textures/default_texture_filter"=0
+
+[layer_names]
+
+2d_physics/layer_1="player_hurtbox"
+2d_physics/layer_2="enemy_hurtbox"

@@ -1,4 +1,4 @@
-extends Node
+class_name Input_Rob
 
 const inputs := ["Move Left", "Move Right", "Move Up", "Move Down", "Secondary Input", "Light Punch", "Light Kick", "Heavy Punch", "Heavy Kick"]
 
@@ -14,7 +14,7 @@ const default_layout := {
 	"Heavy Kick": KEY_L}
 
 # Called when the node enters the scene tree for the first time.
-func _ready() -> void:
+func _init() -> void:
 	
 	for input in inputs:
 		

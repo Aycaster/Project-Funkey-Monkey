@@ -1,26 +1,25 @@
-[gd_scene load_steps=96 format=3 uid="uid://dbjpxy0kv7hj3"]
+[gd_scene format=3 uid="uid://dbjpxy0kv7hj3"]
 
 [ext_resource type="Script" uid="uid://bvg03sh0aiphy" path="res://Scripts/rob/rob.gd" id="1_itf38"]
 [ext_resource type="Texture2D" uid="uid://s3v63ktqwcie" path="res://Assets/Animations/Jump_Kick.png" id="2_kcwb8"]
 [ext_resource type="Texture2D" uid="uid://byi0hbs11afut" path="res://Assets/Animations/Landing.png" id="2_v50u1"]
 [ext_resource type="Texture2D" uid="uid://dtmkt63bnv0r5" path="res://Assets/Animations/Upward Jump.png" id="2_y3vv4"]
 [ext_resource type="Texture2D" uid="uid://qa0rw0lu2fqh" path="res://Assets/Animations/Jumping.png" id="3_cgtu4"]
-[ext_resource type="Texture2D" uid="uid://bgehpvp552358" path="res://Assets/Animations/Fire_Kick.png" id="3_kcwb8"]
 [ext_resource type="Texture2D" uid="uid://c3cdovvnd7c2i" path="res://Assets/Animations/Punch_1.png" id="3_qt3xs"]
 [ext_resource type="Texture2D" uid="uid://bsjyi6bymfaqp" path="res://Assets/Animations/Kick.png" id="4_k3dbn"]
 [ext_resource type="Texture2D" uid="uid://chc05w8mfhths" path="res://Assets/Animations/Running.png" id="4_q2g7r"]
 [ext_resource type="Texture2D" uid="uid://dlua182q7cik5" path="res://Assets/Animations/Stop_Running.png" id="5_ce07w"]
+[ext_resource type="Texture2D" uid="uid://ct1xj5gi5qhao" path="res://Assets/Animations/Punch_2.png" id="5_kcwb8"]
 [ext_resource type="Texture2D" uid="uid://bnc5ifx0d435p" path="res://Assets/Animations/Walking.png" id="6_xnorx"]
-[ext_resource type="Script" uid="uid://chwelefmv2uhs" path="res://Scripts/rob/state_machine(rob).gd" id="7_cgtu4"]
-[ext_resource type="Script" uid="uid://cmsopbp27hrb4" path="res://Scripts/rob/animated_sprite_2d.gd" id="7_xtc7w"]
-[ext_resource type="Script" uid="uid://164j6x03317k" path="res://Scripts/rob/can_control.gd" id="8_ce07w"]
-[ext_resource type="Script" uid="uid://b3qug6645ndfh" path="res://Scripts/rob/movement.gd" id="10_xnorx"]
-[ext_resource type="Script" uid="uid://bx8j3hjbfgrwf" path="res://Scripts/rob/descriptor.gd" id="10_xtc7w"]
-[ext_resource type="Script" uid="uid://c3o6q6bf1n12o" path="res://Scripts/rob/attack.gd" id="11_l3gi0"]
-[ext_resource type="Script" uid="uid://doici2nn6lqhj" path="res://Scripts/rob/Input.gd" id="14_5eddl"]
+[ext_resource type="Script" uid="uid://chwelefmv2uhs" path="res://Scripts/rob/state machine/state_machine(rob).gd" id="7_cgtu4"]
+[ext_resource type="Script" uid="uid://cmsopbp27hrb4" path="res://Scripts/rob/visuals/animated_sprite_2d.gd" id="7_xtc7w"]
+[ext_resource type="Script" uid="uid://164j6x03317k" path="res://Scripts/rob/state machine/can_control.gd" id="8_ce07w"]
 
-[sub_resource type="RectangleShape2D" id="RectangleShape2D_itf38"]
-size = Vector2(12, 21)
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_r72jf"]
+size = Vector2(20, 8)
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_k3dbn"]
+size = Vector2(9, 20)
 
 [sub_resource type="AtlasTexture" id="AtlasTexture_btd74"]
 atlas = ExtResource("2_kcwb8")
@@ -55,48 +54,24 @@ atlas = ExtResource("2_kcwb8")
 region = Rect2(896, 0, 128, 128)
 
 [sub_resource type="AtlasTexture" id="AtlasTexture_i8yxa"]
-atlas = ExtResource("3_kcwb8")
+atlas = ExtResource("3_qt3xs")
 region = Rect2(0, 0, 128, 128)
 
 [sub_resource type="AtlasTexture" id="AtlasTexture_ewbvu"]
-atlas = ExtResource("3_kcwb8")
+atlas = ExtResource("3_qt3xs")
 region = Rect2(128, 0, 128, 128)
 
 [sub_resource type="AtlasTexture" id="AtlasTexture_506sf"]
-atlas = ExtResource("3_kcwb8")
+atlas = ExtResource("3_qt3xs")
 region = Rect2(256, 0, 128, 128)
 
 [sub_resource type="AtlasTexture" id="AtlasTexture_8i2nl"]
-atlas = ExtResource("3_kcwb8")
+atlas = ExtResource("3_qt3xs")
 region = Rect2(384, 0, 128, 128)
 
 [sub_resource type="AtlasTexture" id="AtlasTexture_yrdwa"]
-atlas = ExtResource("3_kcwb8")
+atlas = ExtResource("3_qt3xs")
 region = Rect2(512, 0, 128, 128)
-
-[sub_resource type="AtlasTexture" id="AtlasTexture_pp8ir"]
-atlas = ExtResource("3_kcwb8")
-region = Rect2(640, 0, 128, 128)
-
-[sub_resource type="AtlasTexture" id="AtlasTexture_tdxjo"]
-atlas = ExtResource("3_kcwb8")
-region = Rect2(768, 0, 128, 128)
-
-[sub_resource type="AtlasTexture" id="AtlasTexture_x6tg3"]
-atlas = ExtResource("3_kcwb8")
-region = Rect2(896, 0, 128, 128)
-
-[sub_resource type="AtlasTexture" id="AtlasTexture_vfpdf"]
-atlas = ExtResource("3_kcwb8")
-region = Rect2(1024, 0, 128, 128)
-
-[sub_resource type="AtlasTexture" id="AtlasTexture_11ymn"]
-atlas = ExtResource("3_kcwb8")
-region = Rect2(1152, 0, 128, 128)
-
-[sub_resource type="AtlasTexture" id="AtlasTexture_3ja2b"]
-atlas = ExtResource("3_kcwb8")
-region = Rect2(1280, 0, 128, 128)
 
 [sub_resource type="AtlasTexture" id="AtlasTexture_7vwnr"]
 atlas = ExtResource("4_k3dbn")
@@ -118,25 +93,17 @@ region = Rect2(384, 0, 128, 128)
 atlas = ExtResource("4_k3dbn")
 region = Rect2(512, 0, 128, 128)
 
-[sub_resource type="AtlasTexture" id="AtlasTexture_8fi41"]
-atlas = ExtResource("3_qt3xs")
+[sub_resource type="AtlasTexture" id="AtlasTexture_pp8ir"]
+atlas = ExtResource("5_kcwb8")
 region = Rect2(0, 0, 128, 128)
 
-[sub_resource type="AtlasTexture" id="AtlasTexture_x22so"]
-atlas = ExtResource("3_qt3xs")
+[sub_resource type="AtlasTexture" id="AtlasTexture_tdxjo"]
+atlas = ExtResource("5_kcwb8")
 region = Rect2(128, 0, 128, 128)
 
-[sub_resource type="AtlasTexture" id="AtlasTexture_46j22"]
-atlas = ExtResource("3_qt3xs")
+[sub_resource type="AtlasTexture" id="AtlasTexture_x6tg3"]
+atlas = ExtResource("5_kcwb8")
 region = Rect2(256, 0, 128, 128)
-
-[sub_resource type="AtlasTexture" id="AtlasTexture_457i5"]
-atlas = ExtResource("3_qt3xs")
-region = Rect2(384, 0, 128, 128)
-
-[sub_resource type="AtlasTexture" id="AtlasTexture_vumll"]
-atlas = ExtResource("3_qt3xs")
-region = Rect2(512, 0, 128, 128)
 
 [sub_resource type="AtlasTexture" id="AtlasTexture_cu4bn"]
 atlas = ExtResource("2_v50u1")
@@ -368,24 +335,6 @@ animations = [{
 }, {
 "duration": 1.0,
 "texture": SubResource("AtlasTexture_yrdwa")
-}, {
-"duration": 1.0,
-"texture": SubResource("AtlasTexture_pp8ir")
-}, {
-"duration": 1.0,
-"texture": SubResource("AtlasTexture_tdxjo")
-}, {
-"duration": 1.0,
-"texture": SubResource("AtlasTexture_x6tg3")
-}, {
-"duration": 1.0,
-"texture": SubResource("AtlasTexture_vfpdf")
-}, {
-"duration": 1.0,
-"texture": SubResource("AtlasTexture_11ymn")
-}, {
-"duration": 1.0,
-"texture": SubResource("AtlasTexture_3ja2b")
 }],
 "loop": true,
 "name": &"Heavy Punch",
@@ -413,19 +362,13 @@ animations = [{
 }, {
 "frames": [{
 "duration": 1.0,
-"texture": SubResource("AtlasTexture_8fi41")
+"texture": SubResource("AtlasTexture_pp8ir")
 }, {
 "duration": 1.0,
-"texture": SubResource("AtlasTexture_x22so")
+"texture": SubResource("AtlasTexture_tdxjo")
 }, {
 "duration": 1.0,
-"texture": SubResource("AtlasTexture_46j22")
-}, {
-"duration": 1.0,
-"texture": SubResource("AtlasTexture_457i5")
-}, {
-"duration": 1.0,
-"texture": SubResource("AtlasTexture_vumll")
+"texture": SubResource("AtlasTexture_x6tg3")
 }],
 "loop": true,
 "name": &"Light Punch",
@@ -600,34 +543,24 @@ animations = [{
 "speed": 11.0
 }]
 
-[node name="Rob" type="CharacterBody2D"]
+[node name="Rob" type="CharacterBody2D" unique_id=1489883505]
 script = ExtResource("1_itf38")
+hitbox_shape = SubResource("RectangleShape2D_r72jf")
 
-[node name="CollisionShape2D" type="CollisionShape2D" parent="."]
-position = Vector2(0, 0.5)
-shape = SubResource("RectangleShape2D_itf38")
+[node name="CollisionShape2D" type="CollisionShape2D" parent="." unique_id=1748492667]
+position = Vector2(0.5, 0)
+shape = SubResource("RectangleShape2D_k3dbn")
 
-[node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="."]
-position = Vector2(1, -4.999998)
+[node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="." unique_id=896240136]
+position = Vector2(1, -5)
 scale = Vector2(0.21093753, 0.2421875)
 sprite_frames = SubResource("SpriteFrames_br7gg")
-animation = &"Heavy Punch"
+animation = &"Light Punch"
 script = ExtResource("7_xtc7w")
 
-[node name="State Machine" type="Node" parent="."]
+[node name="State Machine" type="Node" parent="." unique_id=663777199 node_paths=PackedStringArray("starting_state")]
 script = ExtResource("7_cgtu4")
+starting_state = NodePath("Can Control")
 
-[node name="Can Control" type="Node" parent="State Machine"]
+[node name="Can Control" type="Node" parent="State Machine" unique_id=443332665]
 script = ExtResource("8_ce07w")
-
-[node name="Movement" type="Node" parent="."]
-script = ExtResource("10_xnorx")
-
-[node name="Attack" type="Node" parent="."]
-script = ExtResource("11_l3gi0")
-
-[node name="Descriptor" type="Node" parent="."]
-script = ExtResource("10_xtc7w")
-
-[node name="Input" type="Node" parent="."]
-script = ExtResource("14_5eddl")

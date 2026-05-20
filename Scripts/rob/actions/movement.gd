@@ -1,4 +1,3 @@
-extends Node
 class_name Movement_Rob
 
 var parent : Rob
@@ -10,6 +9,12 @@ var comp_inputs = {"burst_dash": {"inputs": []}}
 
 const experation = 30
 const base_inputs = {"Left": "KEY_A", "Right": "KEY_D", "Up": "KEY_W", "Down": "KEY_S", "Secondary Input": "KEY_F"}
+
+func init(_parent : Rob, _descriptor : Descriptor, _attack : Attack) -> void:
+	
+	parent = _parent
+	descriptor = _descriptor
+	attack = _attack
 
 # Returns the direction of the player.
 func get_dir() -> Vector2:
@@ -31,20 +36,21 @@ func get_dir() -> Vector2:
 # Used to handle the basic movement functions.
 func move(_delta: float) -> void:
 	
-	if get_dir().x != 0:
-		if not Input.is_action_pressed("Secondary Input"):
-			descriptor.current_movement = "walk"
-			parent.velocity.x = get_dir().x * descriptor.max_speed
-		elif Input.is_action_pressed("Secondary Input"):
-			descriptor.current_movement = "run"
-			parent.velocity.x = get_dir().x * descriptor.max_speed * 2
-	else:
-		parent.velocity.x = 0
+	if parent.is_on_floor():
+		if get_dir().x != 0:
+			if not Input.is_action_pressed("Secondary Input"):
+				descriptor.current_movement = "walk"
+				parent.velocity.x = get_dir().x * descriptor.max_speed
+			elif Input.is_action_pressed("Secondary Input"):
+				descriptor.current_movement = "run"
+				parent.velocity.x = get_dir().x * descriptor.max_speed * 2
+		else:
+			parent.velocity.x = 0
 	
-	if get_dir().x < 0:
-		descriptor.facing = true
-	elif get_dir().x > 0:
-		descriptor.facing = false
+		if get_dir().x < 0:
+			descriptor.facing = true
+		elif get_dir().x > 0:
+			descriptor.facing = false
 	
 	if get_dir().y < 0 and parent.is_on_floor():
 		parent.velocity.y = descriptor.jump_velocity
@@ -61,6 +67,7 @@ func gravity(_delta:float) -> void:
 	
 	if not parent.is_on_floor():
 		parent.velocity.y += parent.gravity * _delta
+		
 
 # incomplete for now
 """func input_buffer() -> void:

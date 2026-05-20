@@ -1,4 +1,3 @@
-extends Node
 class_name Descriptor
 
 const max_speed := 100

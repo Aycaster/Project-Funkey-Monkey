@@ -10,13 +10,13 @@ class_name State_Machine
 	return get_child(0) if starting_state == null else starting_state).call()
 
 # Adds all of the states to the dictionary to store them for later use
-func init(parent: Rob, movement: Movement_Rob, attack: Attack) -> void:
+func init(_parent: Rob, _movement: Movement_Rob, _attack: Attack) -> void:
 	for child in get_children():
 		if child is RobState:
 			states[child.name.to_lower()] = child
-			child.attack = attack
-			child.parent = parent
-			child.movement = movement
+			child.attack = _attack
+			child.parent = _parent
+			child.movement = _movement
 			child.statemachine = self
 			child.request_transition.connect(transition_states)
 
