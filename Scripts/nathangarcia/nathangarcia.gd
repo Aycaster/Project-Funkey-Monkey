@@ -10,6 +10,8 @@ class_name nathangarcia
 @onready var direction : float = 0.0
 @onready var is_alive : bool = true
 
+@export var hitbox_shape: Shape2D
+
 func _ready():
 	healthbar.init_health(stats.health)
 
@@ -35,6 +37,7 @@ func _physics_process(delta: float) -> void:
 			velocity.x = move_toward(velocity.x, 0, SPEED)
 
 		move_and_slide()
+	
 
 
 func _update_health(value) -> void:
@@ -42,3 +45,16 @@ func _update_health(value) -> void:
 	healthbar.health = stats.health
 	if stats.health <= 0 && is_alive:
 		is_alive = false
+
+func _summon_hitbox(_attacktype : float, _attackshape : Shape2D) -> void:
+	var hitbox = Hitbox.new(stats, _attacktype, _attackshape)
+	if Input.is_key_pressed(KEY_Q):
+		hitbox.scale.x = 8
+		hitbox.scale.y = 5
+		hitbox.position.x = 4.0
+		hitbox.position.y = -14.0
+	if Input.is_key_pressed(KEY_F):
+		hitbox.position.x = 65
+		hitbox.position.y = -25
+		hitbox.scale.x = 4
+	add_child(hitbox)

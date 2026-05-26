@@ -17,7 +17,7 @@ func Update(_delta:float):
 		animated_sprite.flip_h = player.direction < 0
 
 	if player.is_on_floor():
-		#Transition to Running state
+		#Transition to Idle state
 		state_transition.emit(self, "Idle")
 	if Input.is_physical_key_pressed(KEY_E) || Input.is_physical_key_pressed(KEY_Q) || Input.is_physical_key_pressed(KEY_F):
 		state_transition.emit(self, "Attacking")
