@@ -1,0 +1,77 @@
+[gd_scene load_steps=6 format=3 uid="uid://dmnu0v35av54x"]
+
+[ext_resource type="Texture2D" uid="uid://c0a8xk5dxlapy" path="res://Enemies/ShurikenDude/shuriken-dude.png" id="1_4nqhj"]
+[ext_resource type="Script" path="res://Enemies/ShurikenDude/shuriken_dude.gd" id="1_tlolf"]
+
+[sub_resource type="Animation" id="Animation_8w5gl"]
+resource_name = "throw"
+length = 2.5
+loop_mode = 1
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath(".:frame")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0, 0.6, 0.7, 0.8, 0.9, 1, 1.1, 1.2, 1.3),
+"transitions": PackedFloat32Array(1, 1, 1, 1, 1, 1, 1, 1, 1),
+"update": 1,
+"values": [0, 1, 2, 3, 4, 5, 6, 7, 8]
+}
+tracks/1/type = "method"
+tracks/1/imported = false
+tracks/1/enabled = true
+tracks/1/path = NodePath("..")
+tracks/1/interp = 1
+tracks/1/loop_wrap = true
+tracks/1/keys = {
+"times": PackedFloat32Array(0.9),
+"transitions": PackedFloat32Array(1),
+"values": [{
+"args": [],
+"method": &"throw_shuriken"
+}]
+}
+
+[sub_resource type="Animation" id="Animation_vfsno"]
+length = 0.001
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath(".:frame")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 1,
+"values": [0]
+}
+
+[sub_resource type="AnimationLibrary" id="AnimationLibrary_534pk"]
+_data = {
+"RESET": SubResource("Animation_vfsno"),
+"throw": SubResource("Animation_8w5gl")
+}
+
+[node name="ShurikenDude" type="Area2D"]
+script = ExtResource("1_tlolf")
+
+[node name="Sprite2D" type="Sprite2D" parent="."]
+texture = ExtResource("1_4nqhj")
+hframes = 9
+
+[node name="AnimationPlayer" type="AnimationPlayer" parent="Sprite2D"]
+autoplay = "throw"
+libraries = {
+"": SubResource("AnimationLibrary_534pk")
+}
+
+[node name="ThrowPosition" type="Node2D" parent="."]
+position = Vector2(-35, 0)
+
+[node name="VisibleOnScreenNotifier2D" type="VisibleOnScreenNotifier2D" parent="."]
+
+[connection signal="screen_entered" from="VisibleOnScreenNotifier2D" to="." method="_on_visible_on_screen_notifier_2d_screen_entered"]
+[connection signal="screen_exited" from="VisibleOnScreenNotifier2D" to="." method="_on_visible_on_screen_notifier_2d_screen_exited"]

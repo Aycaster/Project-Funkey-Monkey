@@ -3,6 +3,9 @@
 [ext_resource type="Texture2D" uid="uid://u5h7oub651g" path="res://Assets/[FREE] Industrial Tileset/FREE/5. Industrial Tileset - Starter Pack 32p/1_Industrial_Tileset_1.png" id="1_ebmjs"]
 [ext_resource type="PackedScene" uid="uid://dbjpxy0kv7hj3" path="res://Scenes/Rob.tscn" id="2_qxrlw"]
 [ext_resource type="PackedScene" uid="uid://bhjpq62u38i5m" path="res://Scenes/nathangarcia.tscn" id="3_wrm1d"]
+[ext_resource type="Script" uid="uid://bxtccrmiu6tg4" path="res://Scripts/nathangarcia/stats.gd" id="4_i6g32"]
+[ext_resource type="PackedScene" uid="uid://cd2ftt0bn7hbo" path="res://Scenes/tyler.tscn" id="5_1l0tm"]
+[ext_resource type="Script" uid="uid://mao7gd0fa4ys" path="res://Scripts/nathangarcia/tyler/tylernpc.gd" id="6_v158k"]
 
 [sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_qxrlw"]
 texture = ExtResource("1_ebmjs")
@@ -203,6 +206,12 @@ texture = ExtResource("1_ebmjs")
 physics_layer_0/collision_layer = 1
 sources/0 = SubResource("TileSetAtlasSource_qxrlw")
 
+[sub_resource type="Resource" id="Resource_h4fw4"]
+resource_local_to_scene = true
+script = ExtResource("4_i6g32")
+health = 35
+metadata/_custom_type_script = "uid://bxtccrmiu6tg4"
+
 [node name="game" type="Node2D" unique_id=918640548]
 
 [node name="Camera2D" type="Camera2D" parent="." unique_id=1642316539]
@@ -221,3 +230,7 @@ scale = Vector2(2, 2)
 [node name="Nathan" parent="." unique_id=1377667173 instance=ExtResource("3_wrm1d")]
 position = Vector2(311.99997, 366)
 scale = Vector2(0.475, 0.475)
+stats = SubResource("Resource_h4fw4")
+
+[node name="Tyler" parent="." unique_id=93529106 instance=ExtResource("5_1l0tm")]
+script = ExtResource("6_v158k")
