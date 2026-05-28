@@ -6,7 +6,6 @@ class_name Attacking_State
 @onready var SPEED = player.SPEED
 
 @onready var meg_shape : Shape2D = $"../../Meg".shape
-@onready var fire_shape : Shape2D = $"../../Fire".shape
 @onready var ice_shape : Shape2D = $"../../Ice".shape
 
 func Enter():

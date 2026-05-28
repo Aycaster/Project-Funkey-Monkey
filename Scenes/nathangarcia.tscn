@@ -399,10 +399,6 @@ animations = [{
 
 [sub_resource type="CircleShape2D" id="CircleShape2D_axjlk"]
 
-[sub_resource type="CapsuleShape2D" id="CapsuleShape2D_8xc8w"]
-radius = 13.898916
-height = 67.948715
-
 [sub_resource type="CapsuleShape2D" id="CapsuleShape2D_8rfyi"]
 radius = 5.0
 
@@ -459,15 +455,12 @@ position = Vector2(34.72, -9.08)
 rotation = 1.1641346
 scale = Vector2(1.15, 1.56)
 shape = SubResource("CircleShape2D_axjlk")
-
-[node name="Fire" type="CollisionShape2D" parent="." unique_id=1301673697]
-visible = false
-position = Vector2(4, -14)
-scale = Vector2(5.54, 1.56)
-shape = SubResource("CapsuleShape2D_8xc8w")
+disabled = true
 
 [node name="Ice" type="CollisionShape2D" parent="." unique_id=1943201444]
 visible = false
+z_index = 3
 position = Vector2(68, -25)
 rotation = 1.5707964
 shape = SubResource("CapsuleShape2D_8rfyi")
+disabled = true
