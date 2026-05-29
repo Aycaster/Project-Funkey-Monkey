@@ -11,13 +11,13 @@ class_name Attacking_State
 func Enter():
 	if Input.is_physical_key_pressed(KEY_E):
 		sprite.play("Meg")
-		player._summon_hitbox("Meg",meg_shape)
+
 	if Input.is_physical_key_pressed(KEY_Q):
 		sprite.play("Fire Blast")
-		player._summon_hitbox("Fire Blast",meg_shape)
+
 	if Input.is_physical_key_pressed(KEY_F):
 		sprite.play("Ice Blast")
-		player._summon_hitbox("Ice Blast",ice_shape)
+
 	pass
 
 func Exit():

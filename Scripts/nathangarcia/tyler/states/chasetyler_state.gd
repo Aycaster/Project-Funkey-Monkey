@@ -17,16 +17,18 @@ func Exit():
 func Update(_delta:float):
 	sprite.play("Chase")
 	
-	print(tyler.PlyrPOS)
-	if tyler.PlyrPOS < 0:
-		print("going right")
+
+	
+	#Follows the player based on if they are on the left or right
+	if tyler.PlyrPOS < -3:
 		tyler._go_right()
+		
 	if tyler.PlyrPOS > 0:
-		print("going left")
 		tyler._go_left()
 	
-	if tyler.position_offset < 50:
+	#Handles Jumps
+	if tyler.PlyrYPOS < tyler.position.y:
+		tyler._jump()
+	
+	if tyler.PlyrPOS < 50 and tyler.PlyrPOS > -125:
 		state_transition.emit(self, "Attack_NPC")
-		
-	
-	
