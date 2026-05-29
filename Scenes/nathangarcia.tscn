@@ -119,6 +119,10 @@ region = Rect2(896, 0, 128, 128)
 atlas = ExtResource("4_pwoph")
 region = Rect2(1024, 0, 128, 128)
 
+[sub_resource type="AtlasTexture" id="AtlasTexture_8xc8w"]
+atlas = ExtResource("4_s3ity")
+region = Rect2(256, 0, 128, 128)
+
 [sub_resource type="AtlasTexture" id="AtlasTexture_8rfyi"]
 atlas = ExtResource("4_s3ity")
 region = Rect2(384, 0, 128, 128)
@@ -138,10 +142,6 @@ region = Rect2(768, 0, 128, 128)
 [sub_resource type="AtlasTexture" id="AtlasTexture_24r2v"]
 atlas = ExtResource("4_s3ity")
 region = Rect2(896, 0, 128, 128)
-
-[sub_resource type="AtlasTexture" id="AtlasTexture_8xc8w"]
-atlas = ExtResource("4_s3ity")
-region = Rect2(256, 0, 128, 128)
 
 [sub_resource type="AtlasTexture" id="AtlasTexture_vdlfs"]
 atlas = ExtResource("3_aaxg8")
@@ -304,6 +304,9 @@ animations = [{
 }, {
 "frames": [{
 "duration": 1.0,
+"texture": SubResource("AtlasTexture_8xc8w")
+}, {
+"duration": 1.0,
 "texture": SubResource("AtlasTexture_8rfyi")
 }, {
 "duration": 1.0,
@@ -317,9 +320,6 @@ animations = [{
 }, {
 "duration": 1.0,
 "texture": SubResource("AtlasTexture_24r2v")
-}, {
-"duration": 1.0,
-"texture": SubResource("AtlasTexture_8xc8w")
 }],
 "loop": false,
 "name": &"Ice Blast",
@@ -349,11 +349,14 @@ animations = [{
 "texture": SubResource("AtlasTexture_o8mtg")
 }, {
 "duration": 1.0,
+"texture": SubResource("AtlasTexture_o8mtg")
+}, {
+"duration": 1.0,
 "texture": SubResource("AtlasTexture_clk6t")
 }],
 "loop": false,
 "name": &"Meg",
-"speed": 25.0
+"speed": 20.65
 }, {
 "frames": [{
 "duration": 1.0,
@@ -415,8 +418,9 @@ shape = SubResource("RectangleShape2D_aaxg8")
 position = Vector2(-0.31, -38.12)
 scale = Vector2(1.295, 1.295)
 sprite_frames = SubResource("SpriteFrames_8si1v")
-animation = &"Ice Blast"
-frame = 2
+animation = &"Meg"
+frame = 3
+frame_progress = 1.0
 
 [node name="FiniteStateMachine" type="Node" parent="." unique_id=1954255326 node_paths=PackedStringArray("initial_state")]
 script = ExtResource("5_v311b")

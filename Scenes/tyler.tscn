@@ -3,8 +3,19 @@
 [ext_resource type="Texture2D" uid="uid://d4defhrkmbddn" path="res://Assets/Bringer-Of-Death/SpriteSheet/Bringer-of-Death-SpritSheet.png" id="1_1fbbp"]
 [ext_resource type="Script" uid="uid://mao7gd0fa4ys" path="res://Scripts/nathangarcia/tyler/tylernpc.gd" id="1_hykua"]
 [ext_resource type="Script" uid="uid://dv8rdjhdrwu23" path="res://Scripts/nathangarcia/States/finite_state_machine.gd" id="2_0xbl2"]
+[ext_resource type="Script" uid="uid://bxtccrmiu6tg4" path="res://Scripts/nathangarcia/stats.gd" id="2_jjb8a"]
 [ext_resource type="Script" uid="uid://bua0u4m7waa12" path="res://Scripts/nathangarcia/tyler/states/IdleTyler_State.gd" id="3_ot6u7"]
-[ext_resource type="Script" uid="uid://20p6oh3etckh" path="res://Scenes/chasetyler_state.gd" id="5_l5mbw"]
+[ext_resource type="Script" uid="uid://20p6oh3etckh" path="res://Scripts/nathangarcia/tyler/states/chasetyler_state.gd" id="5_l5mbw"]
+[ext_resource type="Script" uid="uid://cotfrljcjh6xn" path="res://Scripts/nathangarcia/tyler/states/attack_npc.gd" id="6_l5mbw"]
+
+[sub_resource type="Resource" id="Resource_4bfnd"]
+script = ExtResource("2_jjb8a")
+faction = 1
+health = 100
+metadata/_custom_type_script = "uid://bxtccrmiu6tg4"
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_jjb8a"]
+size = Vector2(55.575, 66.005)
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_ot6u7"]
 size = Vector2(20.04703, 20.148897)
@@ -234,9 +245,9 @@ animations = [{
 "duration": 1.0,
 "texture": SubResource("AtlasTexture_vq7y3")
 }],
-"loop": true,
+"loop": false,
 "name": &"Attack",
-"speed": 5.0
+"speed": 9.0
 }, {
 "frames": [{
 "duration": 1.0,
@@ -375,6 +386,8 @@ animations = [{
 
 [node name="Tyler" type="CharacterBody2D" unique_id=93529106]
 script = ExtResource("1_hykua")
+stats = SubResource("Resource_4bfnd")
+hitbox_shape = SubResource("RectangleShape2D_jjb8a")
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="." unique_id=1500808479]
 position = Vector2(35.752502, 18.4025)
@@ -383,7 +396,9 @@ shape = SubResource("RectangleShape2D_ot6u7")
 
 [node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="." unique_id=968726991]
 sprite_frames = SubResource("SpriteFrames_2j8q0")
-animation = &"Idle"
+animation = &"Attack"
+frame = 6
+frame_progress = 0.0615542
 
 [node name="NPC_FSM" type="Node" parent="." unique_id=1381591822 node_paths=PackedStringArray("initial_state")]
 script = ExtResource("2_0xbl2")
@@ -394,3 +409,6 @@ script = ExtResource("3_ot6u7")
 
 [node name="Chase_NPC" type="Node" parent="NPC_FSM" unique_id=2091579689]
 script = ExtResource("5_l5mbw")
+
+[node name="Attack_NPC" type="Node" parent="NPC_FSM" unique_id=174515699]
+script = ExtResource("6_l5mbw")
