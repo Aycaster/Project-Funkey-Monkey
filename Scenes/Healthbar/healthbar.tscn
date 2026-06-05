@@ -1,4 +1,4 @@
-[gd_scene load_steps=6 format=3 uid="uid://dmphx33lj28t3"]
+[gd_scene format=3 uid="uid://dmphx33lj28t3"]
 
 [ext_resource type="Script" uid="uid://dsau6qoxkduee" path="res://Scripts/nathangarcia/healthbar.gd" id="1_qyp1m"]
 
@@ -19,7 +19,7 @@ shadow_offset = Vector2(0, 1)
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_kg7k8"]
 bg_color = Color(1, 0, 0, 1)
 
-[node name="Healthbar" type="ProgressBar"]
+[node name="Healthbar" type="ProgressBar" unique_id=1890742965]
 z_index = 1
 offset_right = 240.0
 offset_bottom = 4.0
@@ -29,7 +29,7 @@ value = 60.0
 show_percentage = false
 script = ExtResource("1_qyp1m")
 
-[node name="Damagebar" type="ProgressBar" parent="."]
+[node name="Damagebar" type="ProgressBar" parent="." unique_id=31815250]
 z_index = -1
 layout_mode = 1
 anchors_preset = 15
@@ -42,8 +42,7 @@ theme_override_styles/fill = SubResource("StyleBoxFlat_kg7k8")
 value = 80.0
 show_percentage = false
 
-[node name="Timer" type="Timer" parent="."]
-wait_time = 0.4
+[node name="Timer" type="Timer" parent="." unique_id=1927612636]
 one_shot = true
 
 [connection signal="timeout" from="Timer" to="." method="_on_timer_timeout"]

@@ -24,6 +24,10 @@ config/icon="res://icon.svg"
 window/stretch/mode="viewport"
 window/stretch/aspect="ignore"
 
+[editor_plugins]
+
+enabled=PackedStringArray("res://addons/script_splitter/plugin.cfg")
+
 [input]
 
 up={

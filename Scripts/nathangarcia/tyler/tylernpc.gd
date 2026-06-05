@@ -17,6 +17,8 @@ class_name Tyler
 @onready var PlyrPOS : float
 @onready var PlyrYPOS : float
 
+var hitbox = null
+
 func _physics_process(delta: float) -> void:
 	position_offset = abs(player.position.x - tyler.position.x)
 	PlyrPOS = tyler.position.x - player.position.x
@@ -26,7 +28,7 @@ func _physics_process(delta: float) -> void:
 		velocity += get_gravity() * delta
 	
 	move_and_slide()
-	print(PlyrPOS)
+	#print(PlyrPOS)
 
 func _jump() -> void:
 	if is_on_floor():
@@ -47,10 +49,11 @@ func _attack() -> void:
 	animated_sprite.play("Attack")
 	if animated_sprite.animation == "Attack":
 		if animated_sprite.frame == 4:
-			var hitbox = Hitbox.new(stats, animated_sprite, "Attack", 6, hitbox_shape)
-			hitbox.position.y = 10
-			if animated_sprite.flip_h:
-				hitbox.position.x = 115
-			else:
-				hitbox.position.x = -35
-			add_child(hitbox)
+			if not is_instance_valid(hitbox):
+				hitbox = Hitbox.new(stats, animated_sprite, "Attack", 6, hitbox_shape)
+				hitbox.position.y = 10
+				if animated_sprite.flip_h:
+					hitbox.position.x = 185
+				else:
+					hitbox.position.x = -5
+				add_child(hitbox)

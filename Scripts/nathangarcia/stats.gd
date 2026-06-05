@@ -28,15 +28,21 @@ signal health_changed(curr_health: int, max_health: int)
 @export var experience: int = 0: set = _on_experience_set
 @export var faction: Faction = Faction.PLAYER
 
+var healthbar : Healthbar
+var damage := 20
 var level: int:
 	get(): return floor(max(1.0, sqrt(experience/ BASE_LEVEL_XP) + 0.5))
 var curr_max_health: int = 100
 var curr_defense: int = 10
 var curr_attack: int = 10
 
-@export var health: int =0: set = _on_health_set
+@export var health: int = 0 : set = _on_health_set
+var previous_health = null
 
 var stat_buffs: Array[StatBuff]
+
+func init(_healthbar):
+	_healthbar = healthbar
 
 func _init() -> void:
 	setup_stats.call_deferred()
@@ -91,8 +97,10 @@ func take_damage(amount: int) -> void:
 	health -= amount
 	
 func _on_health_set(new_value: int) -> void:
+	previous_health = health
 	health = clampi(new_value, 0, curr_max_health)
 	health_changed.emit(health, curr_max_health)
+	print([previous_health, health])
 	if health <= 0:
 		health_depleted.emit()
 

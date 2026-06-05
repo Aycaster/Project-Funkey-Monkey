@@ -15,9 +15,10 @@ class_name nathangarcia
 @export var hitbox_shape: Shape2D
 
 func _ready():
-	healthbar.init_health(stats.health)
+	healthbar.init_health(stats)
 
 func _physics_process(delta: float) -> void:
+	#print(stats.health)
 	if is_alive:
 		# Add the gravity.
 		if not is_on_floor():
@@ -40,11 +41,12 @@ func _physics_process(delta: float) -> void:
 		_summon_hitbox()
 
 
-func _update_health(value) -> void:
+"""func _update_health(value) -> void:
+	print("update health is running")
 	stats.health = value
 	healthbar.health = stats.health
 	if stats.health <= 0 && is_alive:
-		is_alive = false
+		is_alive = false"""
 
 func _summon_hitbox() -> void: #function to create a hitbox based on attack
 	#this function runs in delta, constantly checks to see if the attack 
