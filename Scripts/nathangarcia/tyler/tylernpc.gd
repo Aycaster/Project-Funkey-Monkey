@@ -12,12 +12,17 @@ class_name Tyler
 @onready var is_alive : bool = true
 @onready var _fight_mode_on : bool = false
 @export var hitbox_shape : Shape2D
+@onready var healthbar = $Healthbar
 
 @onready var position_offset : float
 @onready var PlyrPOS : float
 @onready var PlyrYPOS : float
 
+
 var hitbox = null
+
+func _ready():
+	healthbar.init_health(stats)
 
 func _physics_process(delta: float) -> void:
 	position_offset = abs(player.position.x - tyler.position.x)
@@ -28,7 +33,8 @@ func _physics_process(delta: float) -> void:
 		velocity += get_gravity() * delta
 	
 	move_and_slide()
-	#print(PlyrPOS)
+	
+	print(stats.health)
 
 func _jump() -> void:
 	if is_on_floor():
@@ -53,7 +59,7 @@ func _attack() -> void:
 				hitbox = Hitbox.new(stats, animated_sprite, "Attack", 6, hitbox_shape)
 				hitbox.position.y = 10
 				if animated_sprite.flip_h:
-					hitbox.position.x = 185
+					hitbox.position.x = 99
 				else:
-					hitbox.position.x = -5
+					hitbox.position.x = -25
 				add_child(hitbox)

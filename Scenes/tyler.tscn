@@ -5,17 +5,25 @@
 [ext_resource type="Script" uid="uid://dv8rdjhdrwu23" path="res://Scripts/nathangarcia/States/finite_state_machine.gd" id="2_0xbl2"]
 [ext_resource type="Script" uid="uid://bxtccrmiu6tg4" path="res://Scripts/nathangarcia/stats.gd" id="2_jjb8a"]
 [ext_resource type="Script" uid="uid://bua0u4m7waa12" path="res://Scripts/nathangarcia/tyler/states/IdleTyler_State.gd" id="3_ot6u7"]
+[ext_resource type="Texture2D" uid="uid://ceeianplv3d3v" path="res://Assets/Bringer-Of-Death/Individual Sprite/Hurt/Bringer-of-Death_Hurt_1.png" id="4_50e2k"]
 [ext_resource type="Script" uid="uid://20p6oh3etckh" path="res://Scripts/nathangarcia/tyler/states/chasetyler_state.gd" id="5_l5mbw"]
+[ext_resource type="Texture2D" uid="uid://bf8eg4a78r5gw" path="res://Assets/Bringer-Of-Death/Individual Sprite/Hurt/Bringer-of-Death_Hurt_2.png" id="5_xsnlf"]
 [ext_resource type="Script" uid="uid://cotfrljcjh6xn" path="res://Scripts/nathangarcia/tyler/states/attack_npc.gd" id="6_l5mbw"]
+[ext_resource type="Texture2D" uid="uid://cu50u5y3mpxnk" path="res://Assets/Bringer-Of-Death/Individual Sprite/Hurt/Bringer-of-Death_Hurt_3.png" id="6_vq7y3"]
+[ext_resource type="Script" uid="uid://d1jhmcuouyd1v" path="res://Scripts/nathangarcia/hurtbox.gd" id="8_4bfnd"]
+[ext_resource type="Script" uid="uid://c6fa7uqf41epl" path="res://Scenes/knocked.gd" id="11_803jk"]
+[ext_resource type="Script" uid="uid://bsdycrvc2w0qb" path="res://Scenes/Dead.gd" id="12_vq7y3"]
+[ext_resource type="PackedScene" uid="uid://dmphx33lj28t3" path="res://Scenes/Healthbar/healthbar.tscn" id="13_xsnlf"]
 
 [sub_resource type="Resource" id="Resource_4bfnd"]
+resource_local_to_scene = true
 script = ExtResource("2_jjb8a")
 faction = 1
 health = 100
 metadata/_custom_type_script = "uid://bxtccrmiu6tg4"
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_jjb8a"]
-size = Vector2(55.575, 66.005)
+size = Vector2(80.07, 66.005)
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_ot6u7"]
 size = Vector2(20.04703, 20.148897)
@@ -176,6 +184,18 @@ region = Rect2(840, 0, 140, 93)
 atlas = ExtResource("1_1fbbp")
 region = Rect2(980, 0, 140, 93)
 
+[sub_resource type="AtlasTexture" id="AtlasTexture_2j8q0"]
+atlas = ExtResource("4_50e2k")
+region = Rect2(0, 0, 140, 93)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_12n6u"]
+atlas = ExtResource("5_xsnlf")
+region = Rect2(0, 0, 140, 93)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_yvvjd"]
+atlas = ExtResource("6_vq7y3")
+region = Rect2(0, 0, 140, 93)
+
 [sub_resource type="AtlasTexture" id="AtlasTexture_r6qvp"]
 atlas = ExtResource("1_1fbbp")
 region = Rect2(980, 372, 140, 93)
@@ -317,8 +337,11 @@ animations = [{
 }, {
 "duration": 1.0,
 "texture": SubResource("AtlasTexture_sg167")
+}, {
+"duration": 1.0,
+"texture": null
 }],
-"loop": true,
+"loop": false,
 "name": &"Death",
 "speed": 5.0
 }, {
@@ -349,6 +372,20 @@ animations = [{
 }],
 "loop": true,
 "name": &"Idle",
+"speed": 5.0
+}, {
+"frames": [{
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_2j8q0")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_12n6u")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_yvvjd")
+}],
+"loop": true,
+"name": &"Knock",
 "speed": 5.0
 }, {
 "frames": [{
@@ -384,6 +421,8 @@ animations = [{
 "speed": 5.0
 }]
 
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_4bfnd"]
+
 [node name="Tyler" type="CharacterBody2D" unique_id=93529106]
 script = ExtResource("1_hykua")
 stats = SubResource("Resource_4bfnd")
@@ -396,9 +435,8 @@ shape = SubResource("RectangleShape2D_ot6u7")
 
 [node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="." unique_id=968726991]
 sprite_frames = SubResource("SpriteFrames_2j8q0")
-animation = &"Attack"
-frame = 6
-frame_progress = 0.0615542
+animation = &"Death"
+frame_progress = 0.5347044
 
 [node name="NPC_FSM" type="Node" parent="." unique_id=1381591822 node_paths=PackedStringArray("initial_state")]
 script = ExtResource("2_0xbl2")
@@ -412,3 +450,26 @@ script = ExtResource("5_l5mbw")
 
 [node name="Attack_NPC" type="Node" parent="NPC_FSM" unique_id=174515699]
 script = ExtResource("6_l5mbw")
+
+[node name="Knocked" type="Node" parent="NPC_FSM" unique_id=2043943609]
+script = ExtResource("11_803jk")
+metadata/_custom_type_script = "uid://kapmunmig3vs"
+
+[node name="Dead" type="Node" parent="NPC_FSM" unique_id=997919687]
+script = ExtResource("12_vq7y3")
+metadata/_custom_type_script = "uid://kapmunmig3vs"
+
+[node name="Hurtbox" type="Area2D" parent="." unique_id=29342317]
+script = ExtResource("8_4bfnd")
+metadata/_custom_type_script = "uid://d1jhmcuouyd1v"
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Hurtbox" unique_id=1060949785]
+position = Vector2(35.755, 18.405)
+scale = Vector2(2.025, 2.74)
+shape = SubResource("RectangleShape2D_4bfnd")
+
+[node name="Healthbar" parent="." unique_id=1890742965 instance=ExtResource("13_xsnlf")]
+offset_left = 6.0
+offset_top = -21.0
+offset_right = 64.0
+offset_bottom = -13.0

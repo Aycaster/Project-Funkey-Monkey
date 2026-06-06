@@ -8,7 +8,7 @@ class_name Attack_NPC_State
 
 
 func Enter():
-	tyler.SPEED = 0
+	tyler.velocity.x = 0
 	tyler._attack()
 	pass
 
@@ -22,3 +22,5 @@ func Update(_delta:float):
 		state_transition.emit(self, "Chase_NPC")
 	else:
 		tyler._attack()
+	if tyler.stats.health <= 0:
+		state_transition.emit(self, "Dead")

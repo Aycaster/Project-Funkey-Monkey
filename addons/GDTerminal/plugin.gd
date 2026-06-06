@@ -1,0 +1,726 @@
+# ####################################################################################
+# ##                        This file is part of GDTerminal.                        ##
+# ##                https://github.com/ProgrammerOnCoffee/GDTerminal                ##
+# ####################################################################################
+# ## Copyright (c) 2025-2026 ProgrammerOnCoffee.                                    ##
+# ##                                                                                ##
+# ## Permission is hereby granted, free of charge, to any person obtaining a copy   ##
+# ## of this software and associated documentation files (the "Software"), to deal  ##
+# ## in the Software without restriction, including without limitation the rights   ##
+# ## to use, copy, modify, merge, publish, distribute, sublicense, and/or sell      ##
+# ## copies of the Software, and to permit persons to whom the Software is          ##
+# ## furnished to do so, subject to the following conditions:                       ##
+# ##                                                                                ##
+# ## The above copyright notice and this permission notice shall be included in all ##
+# ## copies or substantial portions of the Software.                                ##
+# ##                                                                                ##
+# ## THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR     ##
+# ## IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,       ##
+# ## FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE    ##
+# ## AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER         ##
+# ## LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,  ##
+# ## OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE  ##
+# ## SOFTWARE.                                                                      ##
+# ####################################################################################
+
+@tool
+extends EditorPlugin
+
+## The plugin dock.
+var dock: BoxContainer
+## The run hotkey, as returned by [method InputEvent.as_text].
+var run_hotkey := "Ctrl+Alt+Kp Enter"
+## The array of [SavedCommand]s.
+var saved_commands: Array[SavedCommand]
+## The currently expanded [SavedCommand].
+var expanded_command: SavedCommand
+## The [ButtonGroup] used for [SavedCommand]s' menu buttons.
+var saved_command_button_group := ButtonGroup.new()
+## The [EditorInterface] singleton.
+var editor_interface := EditorInterface if Engine.get_version_info().hex >= 0x040200 else get_editor_interface()
+
+## The [CodeEdit] that holds code.
+var code_edit: CodeEdit
+## The [Button] that toggles the settings panel when pressed.
+var settings_button: Button
+## The [HBoxContainer] that holds [Button]s related to [SavedCommand]s.
+var actions: HBoxContainer
+## The [Button] that opens the list of saved commands.
+var saved_button: Button
+## The [Button] that runs the code.
+var run_button: Button
+## The [Button] that clears [member code_edit].
+var clear_button: Button
+## The [Button] that expands [member code_edit] when toggled.
+var expand_button: Button
+## The [Button] that moves the dock to the bottom panel.
+var bottom_button: Button
+## The [Panel] that holds the settings window.
+var settings_panel: Panel
+## The [VBoxContainer] that holds settings.
+var settings_vbox: VBoxContainer
+
+## If [code]true[/code], the user is selecting a new run hotkey.
+var _is_selecting_new_run_hotkey := false
+## The last [enum DockSlot] that the plugin was in.[br]
+## Used to restore the plugin dock to the correct slot
+## after moving it out of the bottom panel.
+var _dock_slot := DOCK_SLOT_LEFT_BR
+## If [code]true[/code], the dock is in the bottom panel.
+var _is_in_bottom_panel := false:
+	set(value):
+		if value != _is_in_bottom_panel:
+			dock.custom_minimum_size.y = 192.0 if value else 256.0
+			dock.vertical = not value
+			code_edit.gutters_draw_line_numbers = value and editor_interface.get_editor_settings().get_setting(
+					"text_editor/appearance/gutters/show_line_numbers")
+			run_button.text = "" if value else "Run"
+			run_button.size_flags_horizontal = Control.SIZE_EXPAND if value else Control.SIZE_EXPAND_FILL
+			expand_button.visible = not value
+			var buttons := dock.get_node(^"Buttons") as BoxContainer
+			buttons.size_flags_vertical = Control.SIZE_SHRINK_BEGIN if value else Control.SIZE_FILL
+			buttons.vertical = value
+			
+			var saved_panel := dock.get_node(^"Control/Saved") as Panel
+			var settings_pressed := settings_button.button_pressed
+			var saved_pressed := saved_button.button_pressed
+			if value:
+				code_edit.anchor_left = 0.0
+				code_edit.anchor_right = 1.0
+				code_edit.anchor_top = -1.0 if settings_pressed or saved_pressed else 0.0
+				code_edit.anchor_bottom = 0.0 if settings_pressed or saved_pressed else 1.0
+				settings_panel.anchor_left = 0.0
+				settings_panel.anchor_right = 1.0
+				settings_panel.anchor_top = 0.0 if settings_pressed else 1.0
+				settings_panel.anchor_bottom = 1.0 if settings_pressed else 2.0
+				saved_panel.anchor_left = 0.0
+				saved_panel.anchor_right = 1.0
+				saved_panel.anchor_top = 0.0 if saved_pressed else 1.0
+				saved_panel.anchor_bottom = 1.0 if saved_pressed else 2.0
+			else:
+				code_edit.anchor_top = 0.0
+				code_edit.anchor_bottom = 1.0
+				code_edit.anchor_left = 1.0 if settings_pressed or saved_pressed else 0.0
+				code_edit.anchor_right = 2.0 if settings_pressed or saved_pressed else 1.0
+				settings_panel.anchor_top = 0.0
+				settings_panel.anchor_bottom = 1.0
+				settings_panel.anchor_left = 0.0 if settings_pressed else -1.0
+				settings_panel.anchor_right = 1.0 if settings_pressed else 0.0
+				saved_panel.anchor_top = 0.0
+				saved_panel.anchor_bottom = 1.0
+				saved_panel.anchor_left = 0.0 if saved_pressed else -1.0
+				saved_panel.anchor_right = 1.0 if saved_pressed else 0.0
+			
+			_is_in_bottom_panel = value
+## The value of the Clear on Run setting.
+var _clear_on_run := false
+## The value of the Print on Run setting.
+var _print_on_run := false
+## The value of the Print Execution Time setting.
+var _print_execution_time := false
+## The value of the Mark Scene as Unsaved setting.
+var _mark_unsaved := false
+## The value of the Save Scene setting.
+var _save_scene := false
+## The value of the Expand Factor setting.
+var _expand_factor := 2.5
+
+
+func _enter_tree() -> void:
+	saved_command_button_group.allow_unpress = true
+	dock = load("res://addons/GDTerminal/dock.tscn").instantiate()
+	code_edit = dock.get_node(^"Control/CodeEdit") as CodeEdit
+	settings_panel = dock.get_node(^"Control/Settings") as Panel
+	settings_vbox = settings_panel.get_node(^"ScrollContainer/VBoxContainer") as VBoxContainer
+	actions = dock.get_node(^"Control/Saved/VBoxContainer/ScrollContainer/VBoxContainer/Actions") as HBoxContainer
+	var buttons := dock.get_node(^"Buttons") as BoxContainer
+	settings_button = buttons.get_node(^"Settings") as Button
+	saved_button = buttons.get_node(^"Saved") as Button
+	run_button = buttons.get_node(^"Run")
+	clear_button = buttons.get_node(^"Clear") as Button
+	expand_button = buttons.get_node(^"Expand") as Button
+	bottom_button = settings_vbox.get_node(^"MoveToBottom") as Button
+	
+	saved_button.toggled.connect(func(toggled_on: bool) -> void:
+		if toggled_on:
+			settings_button.disabled = true
+			expand_button.disabled = true
+			clear_button.disabled = true
+			run_button.disabled = true
+		var tween := create_tween().set_trans(Tween.TRANS_CUBIC).set_ease(Tween.EASE_OUT).set_parallel()
+		var saved_panel := dock.get_node(^"Control/Saved")
+		tween.tween_property(saved_panel, ^":modulate:a", 1.0 if toggled_on else 0.5, 0.75)
+		tween.tween_property(code_edit, ^":self_modulate:a", 0.5 if toggled_on else 1.0, 0.75)
+		if _is_in_bottom_panel:
+			tween.tween_property(saved_panel, ^":anchor_top", 0.0 if toggled_on else 1.0, 0.75)
+			tween.tween_property(saved_panel, ^":anchor_bottom", 1.0 if toggled_on else 2.0, 0.75)
+			tween.tween_property(code_edit, ^":anchor_top", -1.0 if toggled_on else 0.0, 0.75)
+			tween.tween_property(code_edit, ^":anchor_bottom", 0.0 if toggled_on else 1.0, 0.75)
+		else:
+			tween.tween_property(saved_panel, ^":anchor_left", 0.0 if toggled_on else -1.0, 0.75)
+			tween.tween_property(saved_panel, ^":anchor_right", 1.0 if toggled_on else 0.0, 0.75)
+			tween.tween_property(code_edit, ^":anchor_left", 1.0 if toggled_on else 0.0, 0.75)
+			tween.tween_property(code_edit, ^":anchor_right", 2.0 if toggled_on else 1.0, 0.75)
+		if not toggled_on:
+			await tween.finished
+			run_button.disabled = false
+			clear_button.disabled = false
+			expand_button.disabled = false
+			settings_button.disabled = false
+			if actions.visible:
+				saved_command_button_group.get_pressed_button().button_pressed = false
+			for command in saved_commands.duplicate():
+				if command.is_deleted:
+					saved_commands.erase(command)
+					command.queue_free()
+	)
+	settings_button.toggled.connect(func(toggled_on: bool) -> void:
+		if toggled_on:
+			saved_button.disabled = true
+			clear_button.disabled = true
+			expand_button.disabled = true
+		var tween := create_tween().set_trans(Tween.TRANS_CUBIC).set_ease(Tween.EASE_OUT).set_parallel()
+		tween.tween_property(settings_panel, ^":modulate:a", 1.0 if toggled_on else 0.5, 0.75)
+		tween.tween_property(code_edit, ^":self_modulate:a", 0.5 if toggled_on else 1.0, 0.75)
+		if _is_in_bottom_panel:
+			tween.tween_property(settings_panel, ^":anchor_top", 0.0 if toggled_on else 1.0, 0.75)
+			tween.tween_property(settings_panel, ^":anchor_bottom", 1.0 if toggled_on else 2.0, 0.75)
+			tween.tween_property(code_edit, ^":anchor_top", -1.0 if toggled_on else 0.0, 0.75)
+			tween.tween_property(code_edit, ^":anchor_bottom", 0.0 if toggled_on else 1.0, 0.75)
+		else:
+			tween.tween_property(settings_panel, ^":anchor_left", 0.0 if toggled_on else -1.0, 0.75)
+			tween.tween_property(settings_panel, ^":anchor_right", 1.0 if toggled_on else 0.0, 0.75)
+			tween.tween_property(code_edit, ^":anchor_left", 1.0 if toggled_on else 0.0, 0.75)
+			tween.tween_property(code_edit, ^":anchor_right", 2.0 if toggled_on else 1.0, 0.75)
+		if not toggled_on:
+			await tween.finished
+			expand_button.disabled = false
+			clear_button.disabled = false
+			saved_button.disabled = false
+	)
+	settings_vbox.get_node(^"RunHotkey/Button").pressed.connect(func() -> void:
+		var button := settings_vbox.get_node(^"RunHotkey/Button") as Button
+		button.text = "Press Key(s)"
+		run_button.disabled = true
+		_is_selecting_new_run_hotkey = true
+		await button.mouse_exited
+		_is_selecting_new_run_hotkey = false
+		run_button.disabled = false
+		button.text = run_hotkey
+	)
+	
+	actions.get_node(^"MoveUp").pressed.connect(func() -> void:
+		var i := saved_commands.find(expanded_command)
+		if i > 0:
+			expanded_command.get_parent().move_child(expanded_command, i - 1)
+			actions.get_parent().move_child(actions, i)
+			saved_commands[i] = saved_commands[i - 1]
+			saved_commands[i - 1] = expanded_command
+	)
+	actions.get_node(^"MoveDown").pressed.connect(func() -> void:
+		var i := saved_commands.find(expanded_command)
+		if i < saved_commands.size() - 1:
+			actions.get_parent().move_child(actions, i + 2)
+			expanded_command.get_parent().move_child(expanded_command, i + 1)
+			saved_commands[i] = saved_commands[i + 1]
+			saved_commands[i + 1] = expanded_command
+	)
+	actions.get_node(^"Load").pressed.connect(func() -> void:
+		code_edit.text = expanded_command.code
+		saved_button.button_pressed = false
+	)
+	actions.get_node(^"Delete").pressed.connect(func() -> void:
+		if expanded_command.is_deleted:
+			expanded_command.is_deleted = false
+			expanded_command.line_edit.editable = true
+			expanded_command.run_button.disabled = false
+			actions.get_node(^"MoveUp").disabled = false
+			actions.get_node(^"MoveDown").disabled = false
+			actions.get_node(^"Load").disabled = false
+			actions.get_node(^"Delete").icon = dock.get_theme_icon(&"Remove", &"EditorIcons")
+			actions.get_node(^"Delete").tooltip_text = "Delete"
+		else:
+			expanded_command.is_deleted = true
+			expanded_command.line_edit.editable = false
+			expanded_command.run_button.disabled = true
+			actions.get_node(^"MoveUp").disabled = true
+			actions.get_node(^"MoveDown").disabled = true
+			actions.get_node(^"Load").disabled = true
+			actions.get_node(^"Delete").icon = dock.get_theme_icon(
+					# UndoRedo icon was added in 4.2 (GH-80102)
+					&"UndoRedo" if Engine.get_version_info().hex >= 0x040200
+					else &"RotateLeft", &"EditorIcons")
+			actions.get_node(^"Delete").tooltip_text = "Undo"
+	)
+	
+	## Calls [method set] with the arguments reversed.
+	var seti := func(value: Variant, property: StringName) -> void:
+		set(property, value)
+	settings_vbox.get_node(^"ClearOnRun").toggled.connect(seti.bind(&"_clear_on_run"))
+	settings_vbox.get_node(^"PrintOnRun").toggled.connect(seti.bind(&"_print_on_run"))
+	settings_vbox.get_node(^"PrintExecutionTime").toggled.connect(seti.bind(&"_print_execution_time"))
+	settings_vbox.get_node(^"MarkUnsaved").toggled.connect(seti.bind(&"_mark_unsaved"))
+	settings_vbox.get_node(^"SaveScene").toggled.connect(seti.bind(&"_save_scene"))
+	settings_vbox.get_node(^"ExpandFactor/SpinBox").value_changed.connect(seti.bind(&"_expand_factor"))
+	bottom_button.toggled.connect(_on_move_to_bottom_toggled)
+	
+	# Expand/collapse
+	dock.get_node(^"Control").resized.connect(func() -> void:
+		if expand_button.button_pressed:
+			code_edit.global_position = dock.global_position
+			code_edit.size = dock.get_node(^"Control").size * Vector2(_expand_factor, 1.0)
+	, CONNECT_DEFERRED)
+	expand_button.toggled.connect(func(toggled_on: bool) -> void:
+		if toggled_on:
+			saved_button.disabled = true
+			settings_button.disabled = true
+			code_edit.set_deferred(&"global_position", code_edit.global_position)
+			code_edit.top_level = true
+			create_tween().set_trans(Tween.TRANS_CUBIC).set_ease(Tween.EASE_OUT).tween_property(
+					code_edit, ^":size:x", settings_panel.size.x * _expand_factor, 0.5)
+			expand_button.icon = dock.get_theme_icon(&"MoveLeft", &"EditorIcons")
+			expand_button.tooltip_text = "Collapse the CodeEdit."
+		else:
+			expand_button.tooltip_text = "Expand the CodeEdit."
+			expand_button.icon = dock.get_theme_icon(&"MoveRight", &"EditorIcons")
+			await create_tween().set_trans(Tween.TRANS_CUBIC).set_ease(Tween.EASE_OUT).tween_property(
+					code_edit, ^":size", settings_panel.size, 0.5).finished
+			code_edit.top_level = false
+			code_edit.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
+			settings_button.disabled = false
+			saved_button.disabled = false
+	)
+	
+	# GDScriptSyntaxHighlighter was only exposed to EditorPlugins in v4.4
+	if ClassDB.can_instantiate(&"GDScriptSyntaxHighlighter"):
+		code_edit.syntax_highlighter = ClassDB.instantiate(&"GDScriptSyntaxHighlighter")
+	else:
+		# Compatibility for versions < 4.4
+		# Attempt to get a GDScriptSyntaxHighlighter from an open script editor
+		var script_editor := editor_interface.get_script_editor()
+		for open_script_editor in script_editor.get_open_script_editors():
+			# Get the open script editor's syntax highlighter
+			var syntax_highlighter: SyntaxHighlighter = open_script_editor.get_base_editor().syntax_highlighter
+			if syntax_highlighter.is_class("GDScriptSyntaxHighlighter"):
+				code_edit.syntax_highlighter = syntax_highlighter
+		
+		# Attempt to get a GDScriptSyntaxHighlighter whenever the script is changed
+		if not code_edit.syntax_highlighter:
+			script_editor.editor_script_changed.connect(_on_editor_script_changed)
+	
+	run_button.pressed.connect(func() -> void:
+		run(code_edit.text))
+	clear_button.pressed.connect(code_edit.clear)
+	
+	# Save current code sample
+	dock.get_node(^"Control/Saved/VBoxContainer/Button"
+			).pressed.connect(func() -> void:
+		if code_edit.text:
+			add_saved_command("New Command", code_edit.text))
+	
+	if FileAccess.file_exists("res://addons/GDTerminal/data.cfg"):
+		var config := ConfigFile.new()
+		if not config.load("res://addons/GDTerminal/data.cfg"):
+			code_edit.text = config.get_value("data", "command", "")
+			for command in config.get_value("data", "saved_commands", []):
+				add_saved_command(command[0], command[1])
+			_is_in_bottom_panel = config.get_value("data", "is_in_bottom", _is_in_bottom_panel)
+			
+			_clear_on_run = config.get_value("settings", "clear_on_run", _clear_on_run)
+			_print_on_run = config.get_value("settings", "print_on_run", _print_on_run)
+			_print_execution_time = config.get_value("settings", "print_execution_time", _print_execution_time)
+			_mark_unsaved = config.get_value("settings", "mark_unsaved", _mark_unsaved)
+			_save_scene = config.get_value("settings", "save_scene", _save_scene)
+			_expand_factor = config.get_value("settings", "expand_factor", _expand_factor)
+			
+			run_hotkey = config.get_value("hotkeys", "run_hotkey", run_hotkey)
+			var event_key: InputEventKey = run_button.shortcut.events[0]
+			event_key.keycode = config.get_value("hotkeys", "run_hotkey_keycode", 4194310)
+			event_key.alt_pressed = config.get_value("hotkeys", "run_hotkey_alt_pressed", true)
+			event_key.ctrl_pressed = config.get_value("hotkeys", "run_hotkey_ctrl_pressed", true)
+			event_key.meta_pressed = config.get_value("hotkeys", "run_hotkey_meta_pressed", false)
+			event_key.shift_pressed = config.get_value("hotkeys", "run_hotkey_shift_pressed", false)
+	
+	settings_vbox.get_node(^"ClearOnRun").set_pressed_no_signal(_clear_on_run)
+	settings_vbox.get_node(^"PrintOnRun").set_pressed_no_signal(_print_on_run)
+	settings_vbox.get_node(^"PrintExecutionTime").set_pressed_no_signal(_print_execution_time)
+	settings_vbox.get_node(^"MarkUnsaved").set_pressed_no_signal(_mark_unsaved)
+	settings_vbox.get_node(^"SaveScene").set_pressed_no_signal(_save_scene)
+	settings_vbox.get_node(^"RunHotkey/Button").text = run_hotkey
+	settings_vbox.get_node(^"ExpandFactor/SpinBox").set_value_no_signal(_expand_factor)
+	bottom_button.set_pressed_no_signal(_is_in_bottom_panel)
+	
+	if _is_in_bottom_panel:
+		add_control_to_bottom_panel(dock, "GDTerminal")
+	else:
+		add_control_to_dock(_dock_slot, dock)
+	
+	update_theme()
+	dock.theme_changed.connect(update_theme)
+
+
+func _exit_tree() -> void:
+	if _is_in_bottom_panel:
+		remove_control_from_bottom_panel(dock)
+	else:
+		remove_control_from_docks(dock)
+	
+	#region Save data
+	var config := ConfigFile.new()
+	config.set_value("data", "command", code_edit.text)
+	var commands := []
+	for command in saved_commands:
+		commands.append([command.line_edit.text, command.code])
+	config.set_value("data", "saved_commands", commands)
+	config.set_value("data", "is_in_bottom", _is_in_bottom_panel)
+	
+	config.set_value("settings", "clear_on_run", _clear_on_run)
+	config.set_value("settings", "print_on_run", _clear_on_run)
+	config.set_value("settings", "print_execution_time", _print_execution_time)
+	config.set_value("settings", "mark_scene_as_unsaved", _mark_unsaved)
+	config.set_value("settings", "save_scene", _save_scene)
+	config.set_value("settings", "expand_factor", _expand_factor)
+	
+	config.set_value("hotkeys", "run_hotkey", run_hotkey)
+	var input_event_key: InputEventKey = run_button.shortcut.events[0]
+	config.set_value("hotkeys", "run_hotkey_keycode", input_event_key.keycode)
+	config.set_value("hotkeys", "run_hotkey_alt_pressed", input_event_key.alt_pressed)
+	config.set_value("hotkeys", "run_hotkey_ctrl_pressed", input_event_key.ctrl_pressed)
+	config.set_value("hotkeys", "run_hotkey_meta_pressed", input_event_key.meta_pressed)
+	config.set_value("hotkeys", "run_hotkey_shift_pressed", input_event_key.shift_pressed)
+	config.save("res://addons/GDTerminal/data.cfg")
+	#endregion Save data
+	
+	dock.free()
+
+
+func _unhandled_key_input(event: InputEvent) -> void:
+	var event_key := event as InputEventKey
+	if event_key and event_key.pressed:
+		if code_edit.has_focus():
+			if event_key.keycode == KEY_K and event_key.is_command_or_control_pressed():
+				# Comment selected lines
+				var lines := PackedInt32Array()
+				# Get selected lines of each caret
+				for i in code_edit.get_caret_count():
+					var from_line := code_edit.get_selection_from_line(i)
+					var to_line := code_edit.get_selection_to_line(i)
+					for j in to_line - from_line + 1:
+						var line := from_line + j
+						if line not in lines:
+							lines.append(line)
+				
+				for i in lines:
+					# If line is not already commented
+					if code_edit.is_in_comment(i) == -1:
+						# Comment all lines
+						for j in lines:
+							var line_j := code_edit.get_line(j)
+							# Get index of first key that isn't a space or tab
+							var index := 0
+							for letter in line_j:
+								if letter != "\t" and letter != " ":
+									break
+								index += 1
+							code_edit.set_line(j, line_j.substr(0, index) + "#" + line_j.substr(index))
+						
+						# Shift all carets
+						for j in code_edit.get_caret_count():
+							code_edit.set_caret_column(code_edit.get_caret_column(j) + 1, true, j)
+							code_edit.set_selection_origin_column(
+									code_edit.get_selection_origin_column(j) + 1, j)
+						return
+				
+				# Shift all carets
+				for j in code_edit.get_caret_count():
+					code_edit.set_caret_column(code_edit.get_caret_column(j) - 1, true, j)
+					code_edit.set_selection_origin_column(
+							code_edit.get_selection_origin_column(j) - 1, j)
+				# Uncomment all lines
+				for j in lines:
+					var line_j := code_edit.get_line(j)
+					var delimiter_index := line_j.find("#")
+					code_edit.set_line(j, line_j.substr(0, delimiter_index) + line_j.substr(delimiter_index + 1))
+			else:
+				var keycode := event_key.get_keycode_with_modifiers()
+				if keycode == KEY_MASK_ALT + KEY_UP:
+					code_edit.move_lines_up()
+				elif keycode == KEY_MASK_ALT + KEY_DOWN:
+					code_edit.move_lines_down()
+				elif keycode == KEY_MASK_CTRL + KEY_MASK_ALT + KEY_DOWN:
+					code_edit.duplicate_lines()
+				elif keycode == KEY_MASK_CTRL + KEY_MASK_SHIFT + KEY_D:
+					code_edit.duplicate_selection()
+		elif _is_selecting_new_run_hotkey:
+			# Set run hotkey to new key(s) pressed.
+			run_hotkey = event_key.as_text()
+			settings_vbox.get_node(^"RunHotkey/Button").text = run_hotkey
+			
+			# Update [member run_button]'s shortcut.
+			var run_event := run_button.shortcut.events[0] as InputEventKey
+			run_event.keycode = event_key.keycode
+			run_event.alt_pressed = event_key.alt_pressed
+			run_event.ctrl_pressed = event_key.ctrl_pressed
+			run_event.meta_pressed = event_key.meta_pressed
+			run_event.shift_pressed = event_key.shift_pressed
+
+
+## Runs [param code].
+func run(code: String, is_saved_command := false) -> void:
+	if code == "":
+		return
+	
+	# If a scene is open, run code under the scene's root node.
+	var root := editor_interface.get_edited_scene_root()
+	if not root:
+		# Otherwise, run code under the root window.
+		root = get_tree().get_root()
+	
+	# Provide visual feedback to the user that the command has been run.
+	#region Visual feedback
+	var texture_rect: TextureRect = run_button.get_child(0).duplicate()
+	texture_rect.texture = texture_rect.texture.duplicate()
+	var gradient: Gradient = texture_rect.texture.gradient.duplicate()
+	texture_rect.texture.gradient = gradient
+	texture_rect.show()
+	var set_offset = func(offset: float):
+		gradient.set_offset(2, offset)
+		gradient.set_offset(1, offset - 1.0)
+		gradient.set_offset(0, offset - 2.0)
+	run_button.add_child(texture_rect)
+	var tween = create_tween().set_trans(Tween.TRANS_EXPO).set_ease(Tween.EASE_OUT)
+	tween.tween_method(set_offset, 0.0, 3.0, 0.5)
+	tween.tween_callback(texture_rect.queue_free)
+	#endregion Visual feedback
+	
+	#region Create script
+	var script := GDScript.new()
+	script.source_code = "@tool\nextends Node\nfunc _ready() -> void:"
+	if _print_on_run:
+		script.source_code += '\n\tprint("\\n--- Begin GDTerminal Output ---\\n")'
+	if _print_execution_time:
+		script.source_code += "\n\tvar _command_begin_time := Time.get_ticks_usec()"
+	
+	# Add prefix if one exists
+	var prefix: String
+	for command in saved_commands:
+		if command.line_edit.text == "Prefix":
+			prefix = command.code
+			break
+	if prefix:
+		script.source_code += "\n\t" + "\n\t".join(prefix.split("\n"))
+	script.source_code += "\n\t" + "\n\t".join(code.split("\n"))
+	
+	if _print_on_run:
+		script.source_code += '\n\tprint("\\n--- End GDTerminal Output ---\\n")'
+	if _print_execution_time:
+		script.source_code += '\n\tvar _command_end_time := Time.get_ticks_usec()\n\tprint("\\n--- Execution Time: %s ms ---\\n" % String.num((_command_end_time - _command_begin_time) * 0.001, 3).pad_decimals(3))'
+	if _save_scene:
+		script.source_code += "\n\t" + ("EditorInterface" if Engine.get_version_info().hex >= 0x040200 else "get_editor_interface()") + ".save_scene()"
+	script.source_code += "\n\tqueue_free()"
+	script.reload()
+	#endregion Create script
+	
+	# Create the node parented to the scene root.
+	var node := Node.new()
+	node.name = "GDTerminalExecutor"
+	node.set_script(script)
+	root.add_child(node, false, INTERNAL_MODE_BACK)
+	
+	if _clear_on_run and not is_saved_command:
+		code_edit.clear()
+	if _mark_unsaved and not _save_scene:
+		editor_interface.mark_scene_as_unsaved()
+
+
+## Adds a command to the saved commands list.
+func add_saved_command(title: String, code: String) -> void:
+	var command := SavedCommand.new(title)
+	command.code = code
+	command.menu_button.button_group = saved_command_button_group
+	command.run_button.pressed.connect(run.bind(code, true))
+	command.menu_button.toggled.connect(_on_saved_command_menu_button_toggled.bind(command))
+	actions.get_parent().add_child(command)
+	saved_commands.append(command)
+
+
+## Sets the plugin dock tab icon after coloring it to match the editor's theme.
+func update_dock_tab_icon() -> void:
+	# set_dock_tab_icon was introduced in 4.3
+	# Check engine version for compatibility with earlier versions
+	if not _is_in_bottom_panel and Engine.get_version_info().hex >= 0x040300:
+		var icon := (load("res://addons/GDTerminal/icon.png") as CompressedTexture2D).get_image()
+		# Color icon to match editor theme
+		var settings := editor_interface.get_editor_settings()
+		var color_scheme := settings.get_setting("interface/theme/icon_and_font_color")
+		var v := (224 if color_scheme == 2
+				or (color_scheme == 0 and settings.get_setting("interface/theme/base_color").get_luminance() < 0.5)
+				else 90) / 255.0
+		for x in icon.get_width():
+			for y in icon.get_height():
+				var p := icon.get_pixel(x, y)
+				p.v = v
+				icon.set_pixel(x, y, p)
+		call_deferred(&"set_dock_tab_icon", dock, ImageTexture.create_from_image(icon))
+
+
+## Updates the plugin dock to match the editor's theme.
+func update_theme() -> void:
+	# Set button icons
+	settings_button.icon = dock.get_theme_icon(&"GDScript", &"EditorIcons")
+	saved_button.icon = dock.get_theme_icon(&"Save", &"EditorIcons")
+	run_button.icon = dock.get_theme_icon(&"Play", &"EditorIcons")
+	clear_button.icon = dock.get_theme_icon(&"Clear", &"EditorIcons")
+	expand_button.icon = dock.get_theme_icon(&"MoveRight", &"EditorIcons")
+	run_button.get_child(0).self_modulate = dock.get_theme_color(&"accent_color", &"Editor")
+	bottom_button.icon = dock.get_theme_icon(&"ControlAlignBottomWide", &"EditorIcons")
+	
+	actions.get_node(^"MoveUp").icon = dock.get_theme_icon(&"MoveUp", &"EditorIcons")
+	actions.get_node(^"MoveDown").icon = dock.get_theme_icon(&"MoveDown", &"EditorIcons")
+	actions.get_node(^"Load").icon = dock.get_theme_icon(&"Load", &"EditorIcons")
+	actions.get_node(^"Delete").icon = dock.get_theme_icon(&"Remove", &"EditorIcons")
+	
+	# Adjust CodeEdit based on user's script editor settings
+	var editor_settings := editor_interface.get_editor_settings()
+	code_edit.caret_type = editor_settings.get_setting(
+			"text_editor/appearance/caret/type")
+	code_edit.caret_blink = editor_settings.get_setting(
+			"text_editor/appearance/caret/caret_blink")
+	code_edit.caret_blink_interval = editor_settings.get_setting(
+			"text_editor/appearance/caret/caret_blink_interval")
+	code_edit.caret_move_on_right_click = editor_settings.get_setting(
+			"text_editor/behavior/navigation/move_caret_on_right_click")
+	code_edit.draw_tabs = editor_settings.get_setting(
+			"text_editor/appearance/whitespace/draw_tabs")
+	code_edit.draw_spaces = editor_settings.get_setting(
+			"text_editor/appearance/whitespace/draw_spaces")
+	code_edit.gutters_zero_pad_line_numbers = editor_settings.get_setting(
+			"text_editor/appearance/gutters/line_numbers_zero_padded")
+	code_edit.highlight_current_line = editor_settings.get_setting(
+			"text_editor/appearance/caret/highlight_current_line")
+	code_edit.highlight_all_occurrences = editor_settings.get_setting(
+			"text_editor/appearance/caret/highlight_all_occurrences")
+	code_edit.auto_brace_completion_enabled = editor_settings.get_setting(
+			"text_editor/completion/auto_brace_complete")
+	code_edit.add_theme_font_size_override(&"font_size",
+			editor_settings.get_setting("interface/editor/code_font_size"))
+	code_edit.add_theme_color_override(&"font_color",
+			editor_settings.get_setting("text_editor/theme/highlighting/text_color"))
+	code_edit.add_theme_color_override(&"caret_color",
+			editor_settings.get_setting("text_editor/theme/highlighting/caret_color"))
+	
+	update_dock_tab_icon()
+
+
+func _on_saved_command_menu_button_toggled(toggled_on: bool, command: SavedCommand) -> void:
+	if toggled_on:
+		if command.is_deleted:
+			actions.get_node(^"MoveUp").disabled = true
+			actions.get_node(^"MoveDown").disabled = true
+			actions.get_node(^"Load").disabled = true
+			actions.get_node(^"Delete").icon = dock.get_theme_icon(
+					# UndoRedo icon was added in 4.2 (GH-80102)
+					&"UndoRedo" if Engine.get_version_info().hex >= 0x040200
+					else &"RotateLeft", &"EditorIcons")
+			actions.get_node(^"Delete").tooltip_text = "Undo"
+		else:
+			actions.get_node(^"MoveUp").disabled = false
+			actions.get_node(^"MoveDown").disabled = false
+			actions.get_node(^"Load").disabled = false
+			actions.get_node(^"Delete").icon = dock.get_theme_icon(&"Remove", &"EditorIcons")
+			actions.get_node(^"Delete").tooltip_text = "Delete"
+		actions.get_parent().move_child(actions, saved_commands.find(command) + 1)
+		actions.show()
+		expanded_command = command
+	elif command == expanded_command:
+		actions.hide()
+		expanded_command = null
+
+
+func _on_move_to_bottom_toggled(toggled_on: bool) -> void:
+	_is_in_bottom_panel = toggled_on
+	# Editor docks were reworked in 4.6 (GH-106503)
+	if Engine.get_version_info().hex >= 0x040600:
+		var editor_dock := dock.get_parent()
+		if toggled_on:
+			var current_slot = get(StringName(editor_dock.get_parent().name.to_snake_case().to_upper()))
+			# current_slot will be null when the dock is floating, as well as in versions
+			# before v4.3 because the dock's parent's name will not equal the dock slot
+			if current_slot:
+				_dock_slot = current_slot
+			remove_dock(editor_dock)
+			editor_dock.default_slot = 8
+			add_dock(editor_dock)
+			make_bottom_panel_item_visible.call_deferred(dock)
+		else:
+			remove_dock(editor_dock)
+			editor_dock.default_slot = _dock_slot
+			add_dock(editor_dock)
+			(editor_dock.get_parent() as TabContainer).current_tab = editor_dock.get_index()
+	else:
+		if toggled_on:
+			var current_slot = get(StringName(dock.get_parent().name.to_snake_case().to_upper()))
+			# current_slot will be null when the dock is floating, as well as in versions
+			# before v4.3 because the dock's parent's name will not equal the dock slot
+			if current_slot:
+				_dock_slot = current_slot
+			remove_control_from_docks(dock)
+			add_control_to_bottom_panel(dock, "GDTerminal")
+			make_bottom_panel_item_visible.call_deferred(dock)
+		else:
+			remove_control_from_bottom_panel(dock)
+			add_control_to_dock(_dock_slot, dock)
+			(dock.get_parent() as TabContainer).current_tab = dock.get_index()
+
+
+func _on_editor_script_changed(_script: Script) -> void:
+	var script_editor := editor_interface.get_script_editor()
+	var base_editor := script_editor.get_current_editor().get_base_editor() as CodeEdit
+	if base_editor:
+		var syntax_highlighter := base_editor.syntax_highlighter
+		if syntax_highlighter.is_class("GDScriptSyntaxHighlighter"):
+			code_edit.syntax_highlighter = syntax_highlighter
+			script_editor.editor_script_changed.disconnect(_on_editor_script_changed)
+
+
+## Represents a saved command in the saved commands screen.
+class SavedCommand:
+	extends HBoxContainer
+	
+	## The [LineEdit] that hoolds the command's name.
+	var line_edit := LineEdit.new()
+	## The [Button] that will run the command when pressed.
+	var run_button := Button.new()
+	## The [Button] that will open the actions menu.
+	var menu_button := Button.new()
+	
+	## The command's code.
+	var code: String
+	## If [code]true[/code], the command is currently marked as deleted
+	## and will be freed when the saved commands panel is closed.
+	var is_deleted := false
+	
+	
+	func _init(title: String) -> void:
+		line_edit.placeholder_text = "Command Name"
+		line_edit.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+		line_edit.text = title
+		line_edit.tooltip_text = title
+		add_child(line_edit)
+		run_button.tooltip_text = "Run"
+		add_child(run_button)
+		menu_button.action_mode = BaseButton.ACTION_MODE_BUTTON_PRESS
+		menu_button.toggle_mode = true
+		add_child(menu_button)
+		
+		line_edit.text_changed.connect(_on_line_edit_text_changed)
+		theme_changed.connect(update_icons)
+	
+	
+	func update_icons() -> void:
+		run_button.icon = get_theme_icon(&"Play", &"EditorIcons")
+		menu_button.icon = get_theme_icon(&"GuiTabMenuHl", &"EditorIcons")
+	
+	
+	func _on_line_edit_text_changed(new_text: String) -> void:
+		line_edit.tooltip_text = new_text

@@ -19,6 +19,9 @@ func _ready():
 
 func _physics_process(delta: float) -> void:
 	#print(stats.health)
+	if stats.health <= 0:
+		is_alive = false
+
 	if is_alive:
 		# Add the gravity.
 		if not is_on_floor():

@@ -16,9 +16,6 @@ func Exit():
 
 func Update(_delta:float):
 	sprite.play("Chase")
-	
-
-	
 	#Follows the player based on if they are on the left or right
 	if tyler.PlyrPOS < -3:
 		tyler._go_right()
@@ -32,3 +29,6 @@ func Update(_delta:float):
 	
 	if tyler.PlyrPOS < 50 and tyler.PlyrPOS > -125:
 		state_transition.emit(self, "Attack_NPC")
+
+	if tyler.stats.health <= 0:
+		state_transition.emit(self, "Dead")

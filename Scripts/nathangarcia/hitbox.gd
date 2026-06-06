@@ -39,12 +39,12 @@ func _process(_delta: float) -> void:
 	if not animated_sprite:
 		queue_free()
 		return
-		
+
 	# Remove hitbox if animation changes
 	if animated_sprite.animation != watched_animation:
 		queue_free()
 		return
-		
+
 	if animated_sprite.frame >= end_frame:
 		queue_free()
 

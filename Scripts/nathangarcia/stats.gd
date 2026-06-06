@@ -100,7 +100,6 @@ func _on_health_set(new_value: int) -> void:
 	previous_health = health
 	health = clampi(new_value, 0, curr_max_health)
 	health_changed.emit(health, curr_max_health)
-	print([previous_health, health])
 	if health <= 0:
 		health_depleted.emit()
 

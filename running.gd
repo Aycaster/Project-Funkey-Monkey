@@ -33,3 +33,5 @@ func Update(_delta:float):
 		state_transition.emit(self, "InAir")
 	if Input.is_physical_key_pressed(KEY_E) || Input.is_physical_key_pressed(KEY_Q) || Input.is_physical_key_pressed(KEY_F):
 		state_transition.emit(self, "Attacking")
+	if !player.is_alive:
+		state_transition.emit(self, "Dead")

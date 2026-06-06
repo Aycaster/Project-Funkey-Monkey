@@ -15,4 +15,3 @@ func _ready() -> void:
 
 func receive_hit(damage: int) -> void:
 	owner_stats.take_damage(damage)
-	

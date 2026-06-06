@@ -33,8 +33,26 @@ func change_state(source_state : State, new_state_name : String):
 	new_state.Enter()
 	
 	current_state = new_state
-	
-	
+
 func _process(delta):
 	if current_state:
 		current_state.Update(delta)
+
+
+func force_change_state(new_state: String):
+	var newState = states.get(new_state.to_lower())
+
+	if !newState:
+		print(new_state + " does not exist in the dictionary of states")
+		return
+
+	if current_state == newState:
+		print("State is same, aborting")
+		return
+
+	if current_state:
+		var exit_callable = Callable(current_state, "Exit")
+		exit_callable.call_deferred()
+
+	newState.Enter()
+	current_state = newState

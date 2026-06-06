@@ -27,3 +27,5 @@ func Update(_delta:float):
 	if !sprite.is_playing():
 		# Transition to Idle State
 		state_transition.emit(self, "Idle")
+	if !player.is_alive:
+		state_transition.emit(self, "Dead")
